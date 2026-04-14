@@ -1,98 +1,86 @@
 <view class="container">
-  <!-- 顶部导航栏 -->
-  <view class="nav-bar">
-    <text class="nav-title">明细</text>
-  </view>
-  
-  <!-- 时间筛选 -->
-  <view class="time-filter">
-    <view 
-      class="filter-item {{timeFilter === 'all' ? 'active' : ''}}" 
-      bindtap="setTimeFilter"
-      data-filter="all"
-    >
-      全部
+  <!-- 顶部黄色统计区域 -->
+  <view class="header-section">
+    <view class="year-row">
+      <text class="year-text">{{currentYear}}年</text>
     </view>
-    <view 
-      class="filter-item {{timeFilter === 'today' ? 'active' : ''}}" 
-      bindtap="setTimeFilter"
-      data-filter="today"
-    >
-      今天
-    </view>
-    <view 
-      class="filter-item {{timeFilter === 'week' ? 'active' : ''}}" 
-      bindtap="setTimeFilter"
-      data-filter="week"
-    >
-      本周
-    </view>
-    <view 
-      class="filter-item {{timeFilter === 'month' ? 'active' : ''}}" 
-      bindtap="setTimeFilter"
-      data-filter="month"
-    >
-      本月
+    <view class="month-stats-row">
+      <view class="month-selector" bindtap="showMonthPicker">
+        <text class="month-num">{{currentMonth < 10 ? '0' + currentMonth : currentMonth}}</text>
+        <text class="month-text">月</text>
+        <text class="month-arrow">▼</text>
+      </view>
+      <view class="divider"></view>
+      <view class="stat-col">
+        <text class="stat-label-header">收入</text>
+        <text class="stat-value-header">{{monthIncome}}</text>
+      </view>
+      <view class="stat-col expense-col">
+        <text class="stat-label-header">支出</text>
+        <text class="stat-value-header expense-value">{{monthExpense}}</text>
+      </view>
     </view>
   </view>
-  
-  <!-- 本月统计 -->
-  <view class="month-summary">
-    <view class="summary-item">
-      <text class="summary-label">收入</text>
-      <text class="summary-amount income">+¥{{monthIncome}}</text>
-    </view>
-    <view class="summary-divider"></view>
-    <view class="summary-item">
-      <text class="summary-label">支出</text>
-      <text class="summary-amount expense">-¥{{monthExpense}}</text>
-    </view>
-    <view class="summary-divider"></view>
-    <view class="summary-item">
-      <text class="summary-label">结余</text>
-      <text class="summary-amount {{monthBalance >= 0 ? 'income' : 'expense'}}">
-        {{monthBalance >= 0 ? '+' : ''}}¥{{Math.abs(monthBalance)}}
-      </text>
-    </view>
-  </view>
-  
+
   <!-- 交易记录列表 -->
   <view class="record-list">
     <block wx:for="{{groupedRecords}}" wx:key="date">
       <view class="date-group">
         <view class="date-header">
           <text class="date-text">{{item.dateText}}</text>
-          <text class="date-balance">结余 ¥{{item.dayBalance}}</text>
+          <text class="date-expense">支出：{{item.dayExpense || '0.00'}}</text>
         </view>
-        
+
         <view class="date-records">
           <block wx:for="{{item.records}}" wx:for-item="record" wx:key="id">
             <view class="record-item" bindtap="viewRecord" data-id="{{record.id}}">
               <view class="record-left">
-                <view class="category-icon-wrapper {{record.type === 1 ? 'income' : 'expense'}}">
+                <view class="category-icon-circle">
                   <text class="category-icon">{{getCategoryIcon(record.category)}}</text>
                 </view>
-                <view class="record-info">
-                  <text class="record-category">{{record.category}}</text>
-                  <text class="record-remark">{{record.remark || '无备注'}}</text>
-                </view>
+                <text class="record-category">{{record.category}}</text>
               </view>
               <view class="record-right">
                 <text class="record-amount {{record.type === 1 ? 'income' : 'expense'}}">
-                  {{record.type === 1 ? '+' : '-'}}¥{{record.amount}}
+                  {{record.type === 1 ? '+' : '-'}}{{record.amount}}
                 </text>
-                <text class="record-time">{{record.time}}</text>
               </view>
             </view>
           </block>
         </view>
       </view>
     </block>
-    
+
     <view wx:if="{{filteredRecords.length === 0}}" class="empty-state">
       <text class="empty-icon">📝</text>
       <text class="empty-text">暂无交易记录</text>
       <text class="empty-hint">点击下方「记账」开始记录吧</text>
+    </view>
+  </view>
+
+  <!-- 悬浮添加按钮 -->
+  <view class="fab-add" bindtap="addRecord">
+    <text class="fab-icon">+</text>
+  </view>
+
+  <!-- 月份选择弹窗 -->
+  <view wx:if="{{showMonthPicker}}" class="picker-mask" bindtap="hideMonthPicker">
+    <view class="picker-content" catchtap="stopPropagation">
+      <view class="picker-header">
+        <text class="picker-cancel" bindtap="hideMonthPicker">取消</text>
+        <text class="picker-title">选择月份</text>
+        <text class="picker-confirm" bindtap="confirmMonth">确定</text>
+      </view>
+      <view class="picker-body">
+        <picker-view class="picker-view" value="{{pickerValue}}" bindchange="onPickerChange">
+          <picker-view-column>
+            <view wx:for="{{years}}" wx:key="*this" class="picker-item">{{item}}</view>
+          </picker-view-column>
+          <picker-view-column>
+            <view wx:for="{{months}}" wx:key="*this" class="picker-item">{{item < 10 ? '0' + item : item}}</view>
+          </picker-view-column>
+        </picker-view>
+      </view>
     </view>
   </view>
 </view>

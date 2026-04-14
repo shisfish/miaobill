@@ -5,8 +5,8 @@
 }
 
 .user-section {
-  background: linear-gradient(135deg, #4CAF50, #45a049);
-  padding: 40rpx 32rpx;
+  background: linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%);
+  padding: 48rpx 32rpx 40rpx;
 }
 
 .user-info {
@@ -17,19 +17,20 @@
 }
 
 .avatar {
-  width: 120rpx;
-  height: 120rpx;
+  width: 112rpx;
+  height: 112rpx;
   border-radius: 50%;
-  background-color: rgba(255, 255, 255, 0.3);
+  background-color: rgba(255, 255, 255, 0.25);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  border: 4rpx solid rgba(255, 255, 255, 0.3);
 }
 
 .avatar-text {
-  font-size: 48rpx;
-  font-weight: bold;
+  font-size: 44rpx;
+  font-weight: 600;
   color: white;
 }
 
@@ -41,35 +42,37 @@
 }
 
 .user-name {
-  font-size: 36rpx;
-  font-weight: bold;
+  font-size: 34rpx;
+  font-weight: 600;
   color: white;
 }
 
 .user-id {
   font-size: 24rpx;
-  color: rgba(255, 255, 255, 0.8);
+  color: rgba(255, 255, 255, 0.75);
 }
 
 .checkin-btn {
-  background-color: white;
-  padding: 16rpx 32rpx;
-  border-radius: 40rpx;
+  background-color: rgba(255, 255, 255, 0.95);
+  padding: 14rpx 28rpx;
+  border-radius: 32rpx;
   flex-shrink: 0;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.1);
 }
 
 .checkin-text {
-  font-size: 28rpx;
-  font-weight: bold;
+  font-size: 26rpx;
+  font-weight: 600;
   color: #4CAF50;
 }
 
 .stats-section {
   display: flex;
   justify-content: space-around;
-  background-color: rgba(255, 255, 255, 0.15);
-  border-radius: 16rpx;
-  padding: 32rpx 0;
+  background-color: rgba(255, 255, 255, 0.12);
+  border-radius: 20rpx;
+  padding: 28rpx 0;
+  margin-top: 8rpx;
 }
 
 .stat-item {
@@ -80,25 +83,26 @@
 }
 
 .stat-value {
-  font-size: 40rpx;
-  font-weight: bold;
+  font-size: 36rpx;
+  font-weight: 600;
   color: white;
 }
 
 .stat-label {
-  font-size: 24rpx;
-  color: rgba(255, 255, 255, 0.8);
+  font-size: 22rpx;
+  color: rgba(255, 255, 255, 0.75);
+  margin-top: 8rpx;
 }
 
 .vip-section {
-  margin: 20rpx 32rpx;
-  background: linear-gradient(135deg, #FFD700, #FFA500);
-  border-radius: 16rpx;
-  padding: 32rpx;
+  margin: 24rpx 32rpx;
+  background: linear-gradient(90deg, #FFF8E1 0%, #FFECB3 100%);
+  border-radius: 20rpx;
+  padding: 28rpx 32rpx;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 4rpx 12rpx rgba(255, 215, 0, 0.3);
+  border: 2rpx solid rgba(255, 193, 7, 0.3);
 }
 
 .vip-content {
@@ -108,35 +112,35 @@
 }
 
 .vip-icon {
-  font-size: 48rpx;
+  font-size: 44rpx;
 }
 
 .vip-text {
-  font-size: 32rpx;
-  font-weight: bold;
-  color: #8B4513;
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #F57C00;
 }
 
 .vip-desc {
   font-size: 24rpx;
-  color: #A0522D;
+  color: #FF9800;
   margin-left: 8rpx;
 }
 
 .arrow {
-  font-size: 40rpx;
-  color: rgba(0, 0, 0, 0.3);
+  font-size: 36rpx;
+  color: #FFB74D;
 }
 
 .menu-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 8rpx;
-  margin: 0 24rpx 20rpx;
+  margin: 0 32rpx 20rpx;
   background-color: white;
-  border-radius: 16rpx;
+  border-radius: 20rpx;
   padding: 32rpx 16rpx;
-  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.04);
 }
 
 .menu-grid .menu-item {
@@ -149,12 +153,12 @@
 }
 
 .menu-grid .menu-icon {
-  font-size: 48rpx;
+  font-size: 44rpx;
 }
 
 .menu-grid .menu-text {
   font-size: 24rpx;
-  color: #333;
+  color: #555;
 }
 
 .badge {
@@ -168,33 +172,36 @@
 .card {
   margin: 0 32rpx 20rpx;
   background-color: white;
-  border-radius: 16rpx;
+  border-radius: 20rpx;
   padding: 0 32rpx;
-  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.04);
 }
 
 .card .menu-item {
   display: flex;
   align-items: center;
-  padding: 32rpx 0;
+  padding: 28rpx 0;
   position: relative;
 }
 
 .card .menu-icon {
-  font-size: 40rpx;
+  font-size: 36rpx;
   margin-right: 20rpx;
 }
 
 .card .menu-text {
   flex: 1;
   font-size: 28rpx;
-  color: #333;
+  color: #444;
 }
 
 .risk-level {
   font-size: 24rpx;
   color: #FF9800;
   margin-right: 8rpx;
+  background-color: #FFF3E0;
+  padding: 4rpx 12rpx;
+  border-radius: 8rpx;
 }
 
 .menu-divider {

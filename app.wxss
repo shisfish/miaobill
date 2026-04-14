@@ -1,17 +1,19 @@
 /* 全局样式 */
 page {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  background-color: #f5f5f5;
+  background-color: #f8f9fa;
   color: #333;
+  -webkit-font-smoothing: antialiased;
 }
 
 /* 主题颜色 */
 :root {
   --primary-color: #4CAF50;
-  --accent-color: #81C784;
+  --accent-color: #66BB6A;
   --text-color: #333;
   --text-secondary: #666;
-  --background-color: #f5f5f5;
+  --text-tertiary: #999;
+  --background-color: #f8f9fa;
   --card-background: #fff;
   --border-color: #f0f0f0;
   --income-color: #4CAF50;
@@ -21,8 +23,8 @@ page {
 /* 卡片样式 */
 .card {
   background-color: var(--card-background);
-  border-radius: 16rpx;
-  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
+  border-radius: 20rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.04);
   padding: 24rpx;
   margin-bottom: 20rpx;
 }
@@ -143,8 +145,9 @@ page {
 .toggle-btn {
   display: flex;
   background-color: #f0f0f0;
-  border-radius: 8rpx;
-  overflow: hidden;
+  border-radius: 12rpx;
+  padding: 4rpx;
+  gap: 4rpx;
   margin: 32rpx 0;
 }
 
@@ -154,24 +157,27 @@ page {
   text-align: center;
   font-size: 28rpx;
   font-weight: 500;
-  background-color: #f0f0f0;
+  background-color: transparent;
   color: #666;
+  border-radius: 8rpx;
 }
 
 .toggle-btn-item.active {
   background-color: var(--primary-color);
   color: #fff;
+  box-shadow: 0 2rpx 8rpx rgba(76, 175, 80, 0.3);
 }
 
 /* 统计卡片样式 */
 .stat-card {
-  background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
   color: #fff;
   border-radius: 24rpx;
   padding: 40rpx;
   margin: 32rpx;
   text-align: center;
   position: relative;
+  box-shadow: 0 8rpx 24rpx rgba(76, 175, 80, 0.25);
 }
 
 .stat-card-large {
@@ -182,7 +188,7 @@ page {
 
 .stat-card-small {
   font-size: 28rpx;
-  opacity: 0.9;
+  color: rgba(255, 255, 255, 0.85);
 }
 
 /* 表格样式 */
@@ -235,7 +241,7 @@ page {
 .category-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 32rpx;
+  gap: 24rpx;
   padding: 32rpx;
 }
 
@@ -246,20 +252,21 @@ page {
 }
 
 .category-icon {
-  width: 112rpx;
-  height: 112rpx;
-  border-radius: 50%;
-  background-color: #f5f5f5;
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 24rpx;
+  background: linear-gradient(135deg, #f5f5f5, #eeeeee);
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 16rpx;
-  font-size: 48rpx;
+  font-size: 44rpx;
 }
 
 .category-icon.active {
-  background-color: var(--primary-color);
+  background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
   color: #fff;
+  box-shadow: 0 4rpx 12rpx rgba(76, 175, 80, 0.3);
 }
 
 .category-name {
@@ -298,30 +305,31 @@ page {
   left: 0;
   right: 0;
   background-color: #fff;
-  border-top: 1rpx solid #e0e0e0;
+  border-top: 1rpx solid #f0f0f0;
   display: flex;
   justify-content: space-around;
-  padding: 16rpx 0;
+  padding: 12rpx 0 calc(12rpx + env(safe-area-inset-bottom));
 }
 
 .tab-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 8rpx 0;
+  padding: 8rpx 24rpx;
 }
 
 .tab-icon {
-  width: 48rpx;
-  height: 48rpx;
-  margin-bottom: 8rpx;
+  width: 44rpx;
+  height: 44rpx;
+  margin-bottom: 6rpx;
 }
 
 .tab-text {
-  font-size: 24rpx;
+  font-size: 22rpx;
   color: #999;
 }
 
 .tab-item.active .tab-text {
   color: var(--primary-color);
+  font-weight: 500;
 }
