@@ -1,0 +1,94 @@
+<view class="container">
+  <!-- 金额输入 -->
+  <view class="amount-input">
+    <text class="currency-symbol">¥</text>
+    <input 
+      class="amount" 
+      type="number" 
+      placeholder="0.00" 
+      value="{{amount}}" 
+      bindinput="onAmountChange"
+      focus="true"
+    />
+  </view>
+  
+  <!-- 收支类型选择 -->
+  <view class="type-selector">
+    <view 
+      class="type-item {{type === 1 ? 'active' : ''}}" 
+      bindtap="selectType"
+      data-type="1"
+    >
+      <text class="type-icon income">+</text>
+      <text class="type-text">收入</text>
+    </view>
+    <view 
+      class="type-item {{type === 2 ? 'active' : ''}}" 
+      bindtap="selectType"
+      data-type="2"
+    >
+      <text class="type-icon expense">-</text>
+      <text class="type-text">支出</text>
+    </view>
+  </view>
+  
+  <!-- 分类选择 -->
+  <view class="category-selector">
+    <text class="section-title">选择分类</text>
+    <view class="category-grid">
+      <block wx:for="{{categories}}" wx:key="name">
+        <view 
+          class="category-item {{selectedCategory === item.name ? 'active' : ''}}" 
+          bindtap="selectCategory"
+          data-category="{{item.name}}"
+        >
+          <text class="category-icon">{{item.icon}}</text>
+          <text class="category-name">{{item.name}}</text>
+        </view>
+      </block>
+    </view>
+  </view>
+  
+  <!-- 日期时间选择 -->
+  <view class="date-time-selector">
+    <text class="section-title">日期时间</text>
+    <view class="date-time-inputs">
+      <picker 
+        mode="date" 
+        value="{{date}}" 
+        start="2020-01-01" 
+        end="2030-12-31" 
+        bindchange="onDateChange"
+      >
+        <view class="picker">
+          {{date}}
+        </view>
+      </picker>
+      <picker 
+        mode="time" 
+        value="{{time}}" 
+        bindchange="onTimeChange"
+      >
+        <view class="picker">
+          {{time}}
+        </view>
+      </picker>
+    </view>
+  </view>
+  
+  <!-- 备注输入 -->
+  <view class="remark-input">
+    <text class="section-title">备注</text>
+    <input 
+      class="input" 
+      placeholder="添加备注" 
+      value="{{remark}}" 
+      bindinput="onRemarkChange"
+    />
+  </view>
+  
+  <!-- 保存按钮 -->
+  <view class="save-btn" bindtap="saveRecord">
+    <text class="save-btn-text">保存</text>
+  </view>
+</view>

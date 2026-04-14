@@ -1,0 +1,84 @@
+<view class="container">
+  <!-- 月份选择器 -->
+  <view class="month-selector">
+    <picker mode="month" value="{{selectedMonth}}" bindchange="onMonthChange">
+      <view class="picker">
+        {{selectedMonth}} 预算
+      </view>
+    </picker>
+  </view>
+  
+  <!-- 预算概览 -->
+  <view class="card">
+    <view class="overview">
+      <view class="overview-item">
+        <text class="overview-label">总预算</text>
+        <text class="overview-amount">¥{{totalBudget}}</text>
+      </view>
+      <view class="overview-item">
+        <text class="overview-label">已使用</text>
+        <text class="overview-amount expense">¥{{usedAmount}}</text>
+      </view>
+      <view class="overview-item">
+        <text class="overview-label">剩余</text>
+        <text class="overview-amount income">¥{{remainingAmount}}</text>
+      </view>
+    </view>
+  </view>
+  
+  <!-- 预算列表 -->
+  <view class="card">
+    <view class="card-header">
+      <text class="subtitle">分类预算</text>
+    </view>
+    <view class="budget-list">
+      <block wx:for="{{budgetList}}" wx:key="category">
+        <view class="list-item" bindtap="setBudget" data-category="{{item.category}}">
+          <view class="category-info">
+            <text class="category-icon">{{getCategoryIcon(item.category)}}</text>
+            <text class="category-name">{{item.category}}</text>
+          </view>
+          <view class="budget-info">
+            <text class="budget-amount">¥{{item.budget}}</text>
+            <view class="progress-container">
+              <view 
+                class="progress-bar" 
+                style="width: {{item.percentage}}%; background-color: {{item.percentage > 100 ? '#F44336' : '#4CAF50'}}"
+              ></view>
+            </view>
+            <text class="progress-text">{{item.percentage}}%</text>
+          </view>
+        </view>
+      </block>
+    </view>
+  </view>
+  
+  <!-- 预算提醒设置 -->
+  <view class="card">
+    <view class="card-header">
+      <text class="subtitle">预算提醒</text>
+    </view>
+    <view class="reminder-setting">
+      <view class="setting-item">
+        <text class="setting-label">启用预算提醒</text>
+        <switch 
+          checked="{{reminderEnabled}}" 
+          bindchange="toggleReminder"
+        />
+      </view>
+      <view class="setting-item" wx:if="{{reminderEnabled}}">
+        <text class="setting-label">提醒阈值</text>
+        <picker 
+          mode="selector" 
+          range="{{reminderThresholds}}" 
+          value="{{selectedThreshold}}" 
+          bindchange="onThresholdChange"
+        >
+          <view class="picker">
+            {{reminderThresholds[selectedThreshold]}}
+          </view>
+        </picker>
+      </view>
+    </view>
+  </view>
+</view>

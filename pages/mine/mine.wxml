@@ -1,0 +1,84 @@
+<view class="container">
+  <!-- 个人信息 -->
+  <view class="card">
+    <view class="user-info">
+      <view class="avatar">
+        <text class="avatar-text">{{userInfo.nickName.charAt(0)}}</text>
+      </view>
+      <view class="user-details">
+        <text class="user-name">{{userInfo.nickName || '未登录'}}</text>
+        <text class="user-id">{{userInfo.openId ? 'ID: ' + userInfo.openId.substring(0, 8) + '...' : '点击登录'}}</text>
+      </view>
+      <view class="login-btn" bindtap="login">
+        <text class="login-btn-text">{{userInfo.openId ? '已登录' : '登录'}}</text>
+      </view>
+    </view>
+  </view>
+  
+  <!-- 数据管理 -->
+  <view class="card">
+    <view class="card-header">
+      <text class="subtitle">数据管理</text>
+    </view>
+    <view class="menu-list">
+      <view class="menu-item" bindtap="exportData">
+        <text class="menu-icon">📤</text>
+        <text class="menu-text">导出数据</text>
+        <text class="menu-arrow">›</text>
+      </view>
+      <view class="menu-item" bindtap="clearData">
+        <text class="menu-icon">🗑️</text>
+        <text class="menu-text">清除数据</text>
+        <text class="menu-arrow">›</text>
+      </view>
+      <view class="menu-item" bindtap="backupData">
+        <text class="menu-icon">💾</text>
+        <text class="menu-text">备份数据</text>
+        <text class="menu-arrow">›</text>
+      </view>
+    </view>
+  </view>
+  
+  <!-- 设置 -->
+  <view class="card">
+    <view class="card-header">
+      <text class="subtitle">设置</text>
+    </view>
+    <view class="menu-list">
+      <view class="menu-item" bindtap="toggleReminder">
+        <text class="menu-icon">🔔</text>
+        <text class="menu-text">记账提醒</text>
+        <switch checked="{{settings.reminder}}" bindchange="onReminderChange" />
+      </view>
+      <view class="menu-item" bindtap="selectCurrency">
+        <text class="menu-icon">💱</text>
+        <text class="menu-text">货币单位</text>
+        <text class="menu-value">{{settings.currency}}</text>
+      </view>
+      <view class="menu-item" bindtap="selectTheme">
+        <text class="menu-icon">🎨</text>
+        <text class="menu-text">主题设置</text>
+        <text class="menu-value">{{settings.theme === 'light' ? '浅色' : '深色'}}</text>
+      </view>
+    </view>
+  </view>
+  
+  <!-- 关于 -->
+  <view class="card">
+    <view class="card-header">
+      <text class="subtitle">关于</text>
+    </view>
+    <view class="menu-list">
+      <view class="menu-item" bindtap="showAbout">
+        <text class="menu-icon">ℹ️</text>
+        <text class="menu-text">关于鲨鱼记账</text>
+        <text class="menu-arrow">›</text>
+      </view>
+      <view class="menu-item" bindtap="checkUpdate">
+        <text class="menu-icon">🔄</text>
+        <text class="menu-text">检查更新</text>
+        <text class="menu-value">v1.0.0</text>
+      </view>
+    </view>
+  </view>
+</view>

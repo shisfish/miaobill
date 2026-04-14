@@ -1,0 +1,52 @@
+<view class="container">
+  <!-- 收支概览 -->
+  <view class="card">
+    <view class="overview">
+      <view class="overview-item">
+        <text class="overview-label">今日收支</text>
+        <view class="overview-amount">
+          <text class="income">+¥{{todayIncome}}</text>
+          <text class="expense">-¥{{todayExpense}}</text>
+        </view>
+      </view>
+      <view class="overview-item">
+        <text class="overview-label">本月收支</text>
+        <view class="overview-amount">
+          <text class="income">+¥{{monthIncome}}</text>
+          <text class="expense">-¥{{monthExpense}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+  
+  <!-- 最近交易记录 -->
+  <view class="card">
+    <view class="card-header">
+      <text class="subtitle">最近交易</text>
+    </view>
+    <view class="record-list">
+      <block wx:for="{{recentRecords}}" wx:key="id">
+        <view class="list-item">
+          <view class="record-info">
+            <view class="record-category">
+              <text class="record-icon">{{getCategoryIcon(item.category)}}</text>
+              <text class="record-name">{{item.category}}</text>
+            </view>
+            <text class="record-date">{{item.date}} {{item.time}}</text>
+          </view>
+          <text class="{{item.type === 1 ? 'income' : 'expense'}}">
+            {{item.type === 1 ? '+' : '-'}}¥{{item.amount}}
+          </text>
+        </view>
+      </block>
+      <view wx:if="{{recentRecords.length === 0}}" class="empty-record">
+        <text class="text">暂无交易记录</text>
+      </view>
+    </view>
+  </view>
+  
+  <!-- 底部记账按钮 -->
+  <view class="add-btn" bindtap="goToAddRecord">
+    <text>+</text>
+  </view>
+</view>
