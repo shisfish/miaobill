@@ -28,8 +28,10 @@
       <text>‹</text>
     </view>
     <picker 
-      mode="{{viewMode === 'month' ? 'month' : 'date'}}" 
+      mode="{{viewMode === 'month' ? 'month' : 'year'}}" 
       value="{{currentDate}}" 
+      start="2020-01" 
+      end="2030-12"
       bindchange="onDateChange"
     >
       <view class="date-text">{{displayDate}}</view>
