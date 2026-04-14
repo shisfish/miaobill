@@ -36,8 +36,11 @@ Page({
   },
   
   onDateChange: function(e) {
+    const date = e.detail.value;
+    const year = date.substring(0, 4);
+    const month = date.substring(5, 7);
     this.setData({
-      currentDate: e.detail.value
+      currentDate: `${year}-${month}`
     });
     this.updateDisplayDate();
     this.calculateData();

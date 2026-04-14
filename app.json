@@ -8,7 +8,7 @@
   "window": {
     "backgroundTextStyle": "light",
     "navigationBarBackgroundColor": "#4CAF50",
-    "navigationBarTitleText": "杪记",
+    "navigationBarTitleText": "图表",
     "navigationBarTextStyle": "white"
   },
   "tabBar": {

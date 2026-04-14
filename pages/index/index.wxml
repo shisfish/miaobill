@@ -1,8 +1,4 @@
 <view class="container">
-  <!-- 顶部导航栏 -->
-  <view class="nav-bar">
-    <text class="nav-title">图表</text>
-  </view>
   
   <!-- 年/月切换 -->
   <view class="toggle-btn">
@@ -28,10 +24,11 @@
       <text>‹</text>
     </view>
     <picker 
-      mode="{{viewMode === 'month' ? 'month' : 'year'}}" 
+      mode="date" 
+      fields="month" 
       value="{{currentDate}}" 
-      start="2020-01" 
-      end="2030-12"
+      start="2020-01-01" 
+      end="2030-12-31"
       bindchange="onDateChange"
     >
       <view class="date-text">{{displayDate}}</view>
@@ -84,6 +81,9 @@
           </view>
         </view>
       </block>
+      <view wx:if="{{expenseCategories.length === 0}}" class="empty-category">
+        <text class="empty-text">暂无支出记录</text>
+      </view>
     </view>
   </view>
   
@@ -112,6 +112,9 @@
           </view>
         </view>
       </block>
+      <view wx:if="{{incomeCategories.length === 0}}" class="empty-category">
+        <text class="empty-text">暂无收入记录</text>
+      </view>
     </view>
   </view>
 </view>
