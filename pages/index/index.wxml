@@ -1,52 +1,115 @@
 <view class="container">
-  <!-- 收支概览 -->
-  <view class="card">
-    <view class="overview">
-      <view class="overview-item">
-        <text class="overview-label">今日收支</text>
-        <view class="overview-amount">
-          <text class="income">+¥{{todayIncome}}</text>
-          <text class="expense">-¥{{todayExpense}}</text>
-        </view>
-      </view>
-      <view class="overview-item">
-        <text class="overview-label">本月收支</text>
-        <view class="overview-amount">
-          <text class="income">+¥{{monthIncome}}</text>
-          <text class="expense">-¥{{monthExpense}}</text>
-        </view>
-      </view>
+  <!-- 顶部导航栏 -->
+  <view class="nav-bar">
+    <text class="nav-title">图表</text>
+  </view>
+  
+  <!-- 年/月切换 -->
+  <view class="toggle-btn">
+    <text 
+      class="toggle-btn-item {{viewMode === 'month' ? 'active' : ''}}" 
+      bindtap="switchViewMode"
+      data-mode="month"
+    >
+      月账单
+    </text>
+    <text 
+      class="toggle-btn-item {{viewMode === 'year' ? 'active' : ''}}" 
+      bindtap="switchViewMode"
+      data-mode="year"
+    >
+      年账单
+    </text>
+  </view>
+  
+  <!-- 日期选择 -->
+  <view class="date-selector">
+    <view class="date-arrow" bindtap="prevPeriod">
+      <text>‹</text>
+    </view>
+    <picker 
+      mode="{{viewMode === 'month' ? 'month' : 'date'}}" 
+      value="{{currentDate}}" 
+      bindchange="onDateChange"
+    >
+      <view class="date-text">{{displayDate}}</view>
+    </picker>
+    <view class="date-arrow" bindtap="nextPeriod">
+      <text>›</text>
     </view>
   </view>
   
-  <!-- 最近交易记录 -->
+  <!-- 收支统计卡片 -->
+  <view class="stat-card">
+    <view class="stat-summary">
+      <text class="stat-label">总支出</text>
+      <text class="stat-amount expense">-¥{{totalExpense}}</text>
+    </view>
+    <view class="stat-summary">
+      <text class="stat-label">总收入</text>
+      <text class="stat-amount income">+¥{{totalIncome}}</text>
+    </view>
+    <view class="stat-summary">
+      <text class="stat-label">结余</text>
+      <text class="stat-amount {{balance >= 0 ? 'income' : 'expense'}}">
+        {{balance >= 0 ? '+' : ''}}¥{{Math.abs(balance)}}
+      </text>
+    </view>
+  </view>
+  
+  <!-- 支出分类 -->
   <view class="card">
     <view class="card-header">
-      <text class="subtitle">最近交易</text>
+      <text class="subtitle">支出分类</text>
     </view>
-    <view class="record-list">
-      <block wx:for="{{recentRecords}}" wx:key="id">
-        <view class="list-item">
-          <view class="record-info">
-            <view class="record-category">
-              <text class="record-icon">{{getCategoryIcon(item.category)}}</text>
-              <text class="record-name">{{item.category}}</text>
+    <view class="category-list">
+      <block wx:for="{{expenseCategories}}" wx:key="name">
+        <view class="category-item">
+          <view class="category-left">
+            <view class="category-icon-bg">
+              <text class="category-icon">{{item.icon}}</text>
             </view>
-            <text class="record-date">{{item.date}} {{item.time}}</text>
+            <view class="category-info">
+              <text class="category-name">{{item.name}}</text>
+              <view class="category-bar-bg">
+                <view class="category-bar" style="width: {{item.percentage}}%"></view>
+              </view>
+            </view>
           </view>
-          <text class="{{item.type === 1 ? 'income' : 'expense'}}">
-            {{item.type === 1 ? '+' : '-'}}¥{{item.amount}}
-          </text>
+          <view class="category-right">
+            <text class="category-amount">-¥{{item.amount}}</text>
+            <text class="category-percent">{{item.percentage}}%</text>
+          </view>
         </view>
       </block>
-      <view wx:if="{{recentRecords.length === 0}}" class="empty-record">
-        <text class="text">暂无交易记录</text>
-      </view>
     </view>
   </view>
   
-  <!-- 底部记账按钮 -->
-  <view class="add-btn" bindtap="goToAddRecord">
-    <text>+</text>
+  <!-- 收入分类 -->
+  <view class="card">
+    <view class="card-header">
+      <text class="subtitle">收入分类</text>
+    </view>
+    <view class="category-list">
+      <block wx:for="{{incomeCategories}}" wx:key="name">
+        <view class="category-item">
+          <view class="category-left">
+            <view class="category-icon-bg income-bg">
+              <text class="category-icon">{{item.icon}}</text>
+            </view>
+            <view class="category-info">
+              <text class="category-name">{{item.name}}</text>
+              <view class="category-bar-bg">
+                <view class="category-bar income-bar" style="width: {{item.percentage}}%"></view>
+              </view>
+            </view>
+          </view>
+          <view class="category-right">
+            <text class="category-amount income">+¥{{item.amount}}</text>
+            <text class="category-percent">{{item.percentage}}%</text>
+          </view>
+        </view>
+      </block>
+    </view>
   </view>
 </view>
