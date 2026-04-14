@@ -176,8 +176,8 @@ Page({
   // 显示关于
   showAbout: function() {
     wx.showModal({
-      title: '关于鲨鱼记账',
-      content: '鲨鱼记账是一个简洁易用的个人记账工具，帮助您记录日常收支并提供数据分析功能。\n\n版本：v1.0.0\n\n© 2026 鲨鱼记账',
+      title: '关于杪记',
+      content: '杪记是一个简洁易用的个人记账工具，帮助您记录日常收支并提供数据分析功能。\n\n版本：v1.0.0\n\n© 2026 杪记',
       showCancel: false
     });
   },
