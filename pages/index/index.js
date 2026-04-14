@@ -160,7 +160,7 @@ Page({
     this.setData({
       totalExpense: totalExpense.toFixed(2),
       totalIncome: totalIncome.toFixed(2),
-      balance: balance.toFixed(2),
+      balance: balance.toFixed(2) || '0.00',
       expenseCategories: expenseCategories,
       incomeCategories: incomeCategories
     });

@@ -20,26 +20,26 @@
       {
         "pagePath": "pages/statistics/statistics",
         "text": "明细",
-        "iconPath": "/icons/home.png",
-        "selectedIconPath": "/icons/home-active.png"
+        "iconPath": "icons/home.png",
+        "selectedIconPath": "icons/home-active.png"
       },
       {
         "pagePath": "pages/index/index",
         "text": "图表",
-        "iconPath": "/icons/chart.png",
-        "selectedIconPath": "/icons/chart-active.png"
+        "iconPath": "icons/chart.png",
+        "selectedIconPath": "icons/chart-active.png"
       },
       {
         "pagePath": "pages/addRecord/addRecord",
         "text": "记账",
-        "iconPath": "/icons/budget.png",
-        "selectedIconPath": "/icons/budget-active.png"
+        "iconPath": "icons/budget.png",
+        "selectedIconPath": "icons/budget-active.png"
       },
       {
         "pagePath": "pages/mine/mine",
         "text": "我的",
-        "iconPath": "/icons/mine.png",
-        "selectedIconPath": "/icons/mine-active.png"
+        "iconPath": "icons/mine.png",
+        "selectedIconPath": "icons/mine-active.png"
       }
     ]
   },
