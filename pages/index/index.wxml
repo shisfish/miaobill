@@ -1,120 +1,76 @@
 <view class="container">
-  
-  <!-- 年/月切换 -->
-  <view class="toggle-btn">
-    <text 
-      class="toggle-btn-item {{viewMode === 'month' ? 'active' : ''}}" 
-      bindtap="switchViewMode"
-      data-mode="month"
-    >
-      月账单
-    </text>
-    <text 
-      class="toggle-btn-item {{viewMode === 'year' ? 'active' : ''}}" 
-      bindtap="switchViewMode"
-      data-mode="year"
-    >
-      年账单
-    </text>
-  </view>
-  
-  <!-- 日期选择 -->
-  <view class="date-selector">
-    <view class="date-arrow" bindtap="prevPeriod">
-      <text>‹</text>
+  <!-- 黄色头部 -->
+  <view class="header">
+    <view class="header-row">
+      <text class="header-title">支出</text>
+      <text class="arrow-down">▾</text>
     </view>
-    <picker 
-      mode="date" 
-      fields="month" 
-      value="{{currentDate}}" 
-      start="2020-01-01" 
-      end="2030-12-31"
-      bindchange="onDateChange"
-    >
-      <view class="date-text">{{displayDate}}</view>
-    </picker>
-    <view class="date-arrow" bindtap="nextPeriod">
-      <text>›</text>
+    <view class="period-tabs">
+      <text class="p-tab {{period==='week'?'active':''}}" bindtap="switchPeriod" data-p="week">周</text>
+      <text class="p-tab {{period==='month'?'active':''}}" bindtap="switchPeriod" data-p="month">月</text>
+      <text class="p-tab {{period==='year'?'active':''}}" bindtap="switchPeriod" data-p="year">年</text>
     </view>
   </view>
-  
-  <!-- 收支统计卡片 -->
-  <view class="stat-card">
-    <view class="stat-summary">
-      <text class="stat-label">总支出</text>
-      <text class="stat-amount expense">-¥{{totalExpense}}</text>
+
+  <!-- 周切换行 -->
+  <view class="week-bar" wx:if="{{period==='week'}}">
+    <scroll-view scroll-x class="wscroll">
+      <block wx:for="{{weekLabels}}" wx:key="*this">
+        <text class="witem {{index===activeWeekIdx?'active':''}}" bindtap="pickWeek" data-idx="{{index}}">{{item}}</text>
+      </block>
+      <text class="witem-nav">上周</text>
+    </scroll-view>
+  </view>
+
+  <!-- 统计摘要 -->
+  <view class="summary">
+    <view class="sum-item">
+      <text class="sum-lbl">总支出：</text>
+      <text class="sum-val">{{totalExpense || '0.00'}}</text>
     </view>
-    <view class="stat-summary">
-      <text class="stat-label">总收入</text>
-      <text class="stat-amount income">+¥{{totalIncome}}</text>
-    </view>
-    <view class="stat-summary">
-      <text class="stat-label">结余</text>
-      <text class="stat-amount {{parseFloat(balance) >= 0 ? 'income' : 'expense'}}">
-        {{parseFloat(balance) > 0 ? '+' : ''}}¥{{balance}}
-      </text>
+    <view class="sum-item">
+      <text class="sum-lbl">平均值：</text>
+      <text class="sub-val">{{avgExpense || '0.00'}}</text>
+      <text class="total-right">{{rightTotal || '0.00'}}</text>
     </view>
   </view>
-  
-  <!-- 支出分类 -->
-  <view class="card">
-    <view class="card-header">
-      <text class="subtitle">支出分类</text>
+
+  <!-- 折线图区域 -->
+  <view class="chart-area">
+    <!-- 简易折线图（用canvas或模拟） -->
+    <view class="chart-placeholder" wx:if="{{!hasChart}}">
+      <text style="color:#CCC;font-size:26rpx;">折线图区域</text>
     </view>
-    <view class="category-list">
-      <block wx:for="{{expenseCategories}}" wx:key="name">
-        <view class="category-item">
-          <view class="category-left">
-            <view class="category-icon-bg">
-              <text class="category-icon">{{item.icon}}</text>
-            </view>
-            <view class="category-info">
-              <text class="category-name">{{item.name}}</text>
-              <view class="category-bar-bg">
-                <view class="category-bar" style="width: {{item.percentage}}%"></view>
-              </view>
-            </view>
+    <!-- 实际使用时可用 canvas 绑定绘制 -->
+    <canvas type="2d" id="lineChart" canvas-id="lineChart" class="chart-canvas"></canvas>
+  </view>
+
+  <!-- 支出排行榜 -->
+  <view class="rank-section">
+    <text class="rank-title">支出排行榜</text>
+    <view class="rank-list">
+      <block wx:for="{{rankList}}" wx:key="name">
+        <view class="rank-item">
+          <view class="ri-left">
+            <view class="icon-circle icon-circle-yellow"><text>{{item.icon}}</text></view>
+            <text class="ri-name">{{item.name}}<text class="ri-pct">{{item.pct}}</text></text>
           </view>
-          <view class="category-right">
-            <text class="category-amount">-¥{{item.amount}}</text>
-            <text class="category-percent">{{item.percentage}}%</text>
+          <view class="ri-mid">
+            <view class="progress-bar"><view class="progress-fill" style="width:{{item.barWidth}}%"></view></view>
           </view>
+          <text class="ri-amt">{{item.amount}}</text>
         </view>
       </block>
-      <view wx:if="{{expenseCategories.length === 0}}" class="empty-category">
-        <text class="empty-text">暂无支出记录</text>
+      <view wx:if="{{rankList.length===0}}" style="padding:60rpx;text-align:center;color:#999;">
+        暂无数据
       </view>
     </view>
   </view>
-  
-  <!-- 收入分类 -->
-  <view class="card">
-    <view class="card-header">
-      <text class="subtitle">收入分类</text>
-    </view>
-    <view class="category-list">
-      <block wx:for="{{incomeCategories}}" wx:key="name">
-        <view class="category-item">
-          <view class="category-left">
-            <view class="category-icon-bg income-bg">
-              <text class="category-icon">{{item.icon}}</text>
-            </view>
-            <view class="category-info">
-              <text class="category-name">{{item.name}}</text>
-              <view class="category-bar-bg">
-                <view class="category-bar income-bar" style="width: {{item.percentage}}%"></view>
-              </view>
-            </view>
-          </view>
-          <view class="category-right">
-            <text class="category-amount income">+¥{{item.amount}}</text>
-            <text class="category-percent">{{item.percentage}}%</text>
-          </view>
-        </view>
-      </block>
-      <view wx:if="{{incomeCategories.length === 0}}" class="empty-category">
-        <text class="empty-text">暂无收入记录</text>
-      </view>
-    </view>
+
+  <view style="height:200rpx;"></view><!-- 底部留白 -->
+
+  <!-- 浮动+按钮 -->
+  <view class="fab" style="bottom:170rpx;left:50%;margin-left:-56rpx;" bindtap="addRecord">
+    <text class="fab-icon">+</text>
   </view>
 </view>

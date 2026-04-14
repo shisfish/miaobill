@@ -1,117 +1,83 @@
-<view class="container">
-  <!-- 顶部导航栏 -->
-  <view class="nav-bar">
-    <text class="nav-title">记一笔</text>
-  </view>
-  
-  <!-- 金额显示区域 -->
-  <view class="amount-section">
-    <text class="currency">¥</text>
-    <text class="amount">{{amount || '0.00'}}</text>
-  </view>
-  
-  <!-- 类型切换 -->
-  <view class="type-switch">
-    <view 
-      class="type-item {{type === 2 ? 'active' : ''}}" 
-      bindtap="switchType"
-      data-type="2"
-    >
-      支出
+<view class="container {{keyboardVisible ? 'no-scroll' : ''}}">
+  <!-- 黄色顶部导航 -->
+  <view class="top-bar">
+    <view class="tab-switch">
+      <text class="tab-item {{type===2?'active':''}}" bindtap="switchType" data-type="2">支出</text>
+      <text class="tab-item {{type===1?'active':''}}" bindtap="switchType" data-type="1">收入</text>
     </view>
-    <view 
-      class="type-item {{type === 1 ? 'active' : ''}}" 
-      bindtap="switchType"
-      data-type="1"
-    >
-      收入
-    </view>
+    <text class="cancel-btn" bindtap="goBack">取消</text>
   </view>
-  
-  <!-- 分类选择 -->
-  <view class="category-section">
-    <scroll-view scroll-y="true" class="category-scroll">
-      <view class="category-grid">
-        <block wx:for="{{categories}}" wx:key="name">
-          <view 
-            class="category-item {{selectedCategory === item.name ? 'active' : ''}}"
-            bindtap="selectCategory"
-            data-category="{{item.name}}"
-          >
-            <view class="category-icon-wrapper">
-              <text class="category-icon">{{item.icon}}</text>
-            </view>
-            <text class="category-name">{{item.name}}</text>
+
+  <!-- 分类网格 -->
+  <scroll-view scroll-y="{{!keyboardVisible}}" class="cat-scroll" enhanced show-scrollbar="{{false}}">
+    <view class="cat-grid">
+      <block wx:for="{{categories}}" wx:key="name">
+        <view class="cat-item" bindtap="selectCategory" data-category="{{item.name}}">
+          <view class="cat-icon-wrap {{selectedCategory===item.name ? 'sel' : ''}}">
+            <text class="cat-icon-text">{{item.icon}}</text>
           </view>
-        </block>
+          <text class="cat-name">{{item.name}}</text>
+        </view>
+      </block>
+    </view>
+  </scroll-view>
+
+  <!-- 键盘弹层（默认隐藏） -->
+  <view class="kb-overlay {{keyboardVisible ? 'show' : ''}}" catchtap="hideKeyboard">
+    <view class="kb-panel" catchtap stopPropagation>
+
+      <!-- 金额行（右上角） -->
+      <view class="kb-amount-row">
+        <text class="amt-val-big">{{amount || '0.00'}}</text>
       </view>
-    </scroll-view>
-  </view>
-  
-  <!-- 备注和日期 -->
-  <view class="info-section">
-    <view class="info-item" bindtap="showRemarkModal">
-      <text class="info-label">备注</text>
-      <text class="info-value">{{remark || '添加备注'}}</text>
-      <text class="info-arrow">›</text>
-    </view>
-    <view class="info-divider"></view>
-    <view class="info-item">
-      <text class="info-label">日期</text>
-      <picker mode="date" value="{{date}}" bindchange="onDateChange">
-        <view class="picker-value">{{date}}</view>
-      </picker>
-      <text class="info-arrow">›</text>
-    </view>
-  </view>
-  
-  <!-- 数字键盘 -->
-  <view class="keyboard">
-    <view class="keyboard-row">
-      <view class="key" bindtap="inputNumber" data-key="1">1</view>
-      <view class="key" bindtap="inputNumber" data-key="2">2</view>
-      <view class="key" bindtap="inputNumber" data-key="3">3</view>
-      <view class="key delete" bindtap="deleteNumber">⌫</view>
-    </view>
-    <view class="keyboard-row">
-      <view class="key" bindtap="inputNumber" data-key="4">4</view>
-      <view class="key" bindtap="inputNumber" data-key="5">5</view>
-      <view class="key" bindtap="inputNumber" data-key="6">6</view>
-      <view class="key empty"></view>
-    </view>
-    <view class="keyboard-row">
-      <view class="key" bindtap="inputNumber" data-key="7">7</view>
-      <view class="key" bindtap="inputNumber" data-key="8">8</view>
-      <view class="key" bindtap="inputNumber" data-key="9">9</view>
-      <view class="key save" rowspan="2" bindtap="saveRecord">保存</view>
-    </view>
-    <view class="keyboard-row">
-      <view class="key" bindtap="inputNumber" data-key="0">0</view>
-      <view class="key" bindtap="inputNumber" data-key=".">.</view>
-      <view class="key" bindtap="clearAmount">C</view>
-    </view>
-  </view>
-  
-  <!-- 备注弹窗 -->
-  <view wx:if="{{showModal}}" class="modal-mask" bindtap="hideRemarkModal">
-    <view class="modal-content" catchtap="stopPropagation">
-      <view class="modal-header">
-        <text class="modal-title">添加备注</text>
-        <text class="modal-close" bindtap="hideRemarkModal">×</text>
+
+      <!-- 备注输入行 -->
+      <view class="kb-header">
+        <view class="remark-box">
+          <text class="remark-label">备注:</text>
+          <input
+            class="remark-input"
+            placeholder="点击填写备注"
+            placeholder-class="remark-placeholder"
+            value="{{remark}}"
+            bindinput="onRemarkInput"
+            maxlength="30"
+          />
+        </view>
       </view>
-      <view class="modal-body">
-        <input 
-          class="modal-input" 
-          placeholder="请输入备注" 
-          value="{{remark}}" 
-          bindinput="onRemarkInput"
-          maxlength="50"
-          focus="{{showModal}}"
-        />
-      </view>
-      <view class="modal-footer">
-        <view class="modal-btn cancel" bindtap="hideRemarkModal">取消</view>
-        <view class="modal-btn confirm" bindtap="confirmRemark">确定</view>
+
+      <!-- 数字键盘 -->
+      <view class="kb">
+        <view class="kb-row">
+          <text class="k k-num" bindtap="pressKey" data-key="7">7</text>
+          <text class="k k-num" bindtap="pressKey" data-key="8">8</text>
+          <text class="k k-num" bindtap="pressKey" data-key="9">9</text>
+          <!-- 右侧日期按钮 -->
+          <view class="k date-btn" bindtap="pickDate">
+            <text class="date-icon">📅</text>
+            <text>今天</text>
+          </view>
+        </view>
+        <view class="kb-row">
+          <text class="k k-num" bindtap="pressKey" data-key="4">4</text>
+          <text class="k k-num" bindtap="pressKey" data-key="5">5</text>
+          <text class="k k-num" bindtap="pressKey" data-key="6">6</text>
+          <text class="k k-num" bindtap="pressKey" data-key="+">+</text>
+        </view>
+        <view class="kb-row">
+          <text class="k k-num" bindtap="pressKey" data-key="1">1</text>
+          <text class="k k-num" bindtap="pressKey" data-key="2">2</text>
+          <text class="k k-num" bindtap="pressKey" data-key="3">3</text>
+          <text class="k k-num" bindtap="pressKey" data-key="-">-</text>
+        </view>
+        <view class="kb-row">
+          <text class="k k-num" bindtap="pressKey" data-key=".">.</text>
+          <text class="k k-num" bindtap="pressKey" data-key="0">0</text>
+          <view class="k k-action" bindtap="delKey">
+            <view class="backspace-icon"></view>
+          </view>
+          <text class="k k-ok" bindtap="saveRecord">完成</text>
+        </view>
       </view>
     </view>
   </view>

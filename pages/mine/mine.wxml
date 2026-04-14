@@ -1,121 +1,88 @@
 <view class="container">
-  <!-- 顶部导航栏 -->
-  <view class="nav-bar">
-    <text class="nav-title">我的</text>
-  </view>
-  
-  <!-- 用户信息和打卡 -->
-  <view class="user-section">
-    <view class="user-info">
-      <view class="avatar">
-        <text class="avatar-text">{{userInfo.nickName ? userInfo.nickName.charAt(0) : '用'}}</text>
+  <!-- 黄色用户区 -->
+  <view class="user-header">
+    <view class="user-row">
+      <image class="avatar-img" src="/assets/avatar.png" mode="aspectFill" wx:if="{{avatarUrl}}"></image>
+      <view class="avatar-circle wx:else">
+        <text class="avatar-char">{{nickName ? nickName[0] : '用'}}</text>
       </view>
-      <view class="user-details">
-        <text class="user-name">{{userInfo.nickName || '未登录'}}</text>
-        <text class="user-id">{{userInfo.openId ? 'ID: ' + userInfo.openId.substring(0, 8) + '...' : '点击登录'}}</text>
-      </view>
+      <text class="nickname">{{nickName || '鱼悦鲸'}}</text>
       <view class="checkin-btn" bindtap="checkin">
-        <text class="checkin-text">{{hasCheckedToday ? '已打卡' : '打卡'}}</text>
+        <text class="ci-icon">📅</text><text>打卡</text>
       </view>
     </view>
-    
-    <!-- 统计数据 -->
-    <view class="stats-section">
-      <view class="stat-item">
-        <text class="stat-value">{{checkinDays}}</text>
-        <text class="stat-label">已连续打卡</text>
+
+    <!-- 统计数字 -->
+    <view class="stat-row">
+      <view class="st-item">
+        <text class="st-val">{{checkinDays}}</text>
+        <text class="st-lbl">已连续打卡</text>
       </view>
-      <view class="stat-item">
-        <text class="stat-value">{{totalDays}}</text>
-        <text class="stat-label">记账总天数</text>
+      <view class="st-item">
+        <text class="st-val">{{totalDays}}</text>
+        <text class="st-lbl">记账总天数</text>
       </view>
-      <view class="stat-item">
-        <text class="stat-value">{{totalRecords}}</text>
-        <text class="stat-label">记账总笔数</text>
+      <view class="st-item">
+        <text class="st-val">{{totalRecords}}</text>
+        <text class="st-lbl">记账总笔数</text>
       </view>
     </view>
   </view>
-  
-  <!-- VIP 升级卡片 -->
-  <view class="vip-section" bindtap="upgradeVIP">
-    <view class="vip-content">
+
+  <!-- 升级VIP -->
+  <view class="vip-card" bindtap="upgradeVip">
+    <view class="vip-left">
       <text class="vip-icon">👑</text>
-      <text class="vip-text">升级为VIP</text>
-      <text class="vip-desc">畅享更多高级功能</text>
+      <view class="vip-info">
+        <text class="vip-title">升级为VIP</text>
+        <text class="vip-desc">畅享更多高级功能</text>
+      </view>
     </view>
     <text class="arrow">›</text>
   </view>
-  
-  <!-- 功能菜单 -->
-  <view class="menu-grid">
-    <view class="menu-item" bindtap="showNotifications">
-      <text class="menu-icon">🔔</text>
-      <text class="menu-text">消息</text>
+
+  <!-- 功能网格 -->
+  <view class="fn-grid">
+    <view class="fn-item" bindtap="goMsg">
+      <text class="fn-icon">🔔</text><text class="fn-text">消息</text>
     </view>
-    <view class="menu-item" bindtap="showBadges">
-      <text class="menu-icon">🏅</text>
-      <text class="menu-text">我的徽章</text>
+    <view class="fn-item" bindtap="goBadge">
+      <text class="fn-icon">🏅</text><text class="fn-text">我的徽章</text>
     </view>
-    <view class="menu-item" bindtap="showPoints">
-      <text class="menu-icon">⭐</text>
-      <text class="menu-text">我的积分</text>
+    <view class="fn-item" bindtap="goPoints">
+      <text class="fn-icon">🎁</text><text class="fn-text">我的积分</text>
     </view>
-    <view class="menu-item" bindtap="showSettings">
-      <text class="menu-icon">⚙️</text>
-      <text class="menu-text">设置</text>
-      <text class="badge" wx:if="{{showBadge}}">●</text>
+    <view class="fn-item" bindtap="goSettings">
+      <text class="fn-icon">⚙️</text><text class="fn-text">设置</text>
+      <dot class="red-dot"></dot>
     </view>
   </view>
-  
-  <!-- 我的账本 -->
-  <view class="card">
-    <view class="menu-item" bindtap="showMyBooks">
-      <text class="menu-icon">📒</text>
-      <text class="menu-text">我的账本</text>
-      <text class="arrow">›</text>
-    </view>
-    <view class="menu-divider"></view>
-    <view class="menu-item" bindtap="showFamilyBill">
-      <text class="menu-icon">🏠</text>
-      <text class="menu-text">家庭账单</text>
-      <text class="arrow">›</text>
-    </view>
+
+  <!-- 菜单列表 -->
+  <view class="menu-list">
+    <view class="mi" bindtap="goBooks"><text class="mi-icon">📒</text><text>我的账本</text><text class="arr">›</text></view>
+    <div class="mi-divider"></div>
+    <view class="mi" bindtap="goFamily"><text class="mi-icon">🏠</text><text>家庭账单</text><text class="arr">›</text></view>
   </view>
-  
-  <!-- 设置和安全 -->
-  <view class="card">
-    <view class="menu-item" bindtap="showSettings">
-      <text class="menu-icon">⚙️</text>
-      <text class="menu-text">设置</text>
-      <text class="arrow">›</text>
-    </view>
-    <view class="menu-divider"></view>
-    <view class="menu-item" bindtap="showSecurity">
-      <text class="menu-icon">🛡️</text>
-      <text class="menu-text">账户安全中心</text>
-      <text class="risk-level">中风险</text>
-      <text class="arrow">›</text>
-    </view>
+
+  <view class="menu-list">
+    <view class="mi" bindtap="goSettings2"><text class="mi-icon">⚙️</text><text>设置</text><text class="arr">›</text></view>
+    <div class="mi-divider"></div>
+    <view class="mi" bindtap="goSecurity"><text class="mi-icon">🛡️</text><text>账户安全中心</text><text class="risk">中风险</text><text class="arr">›</text></view>
   </view>
-  
-  <!-- 其他 -->
-  <view class="card">
-    <view class="menu-item" bindtap="showFeedback">
-      <text class="menu-icon">✏️</text>
-      <text class="menu-text">意见反馈</text>
-      <text class="arrow">›</text>
-    </view>
-    <view class="menu-divider"></view>
-    <view class="menu-item" bindtap="rateApp">
-      <text class="menu-icon">👍</text>
-      <text class="menu-text">去应用市场给杪记评分</text>
-      <text class="arrow">›</text>
-    </view>
-    <view class="menu-divider"></view>
-    <view class="menu-item" bindtap="showAbout">
-      <text class="menu-icon">💰</text>
-      <text class="menu-text">关于杪记 V1.0.0</text>
-      <text class="arrow">›</text>
-    </view>
+
+  <view class="menu-list">
+    <view class="mi" bindtap="goFeedback"><text class="mi-icon">✏️</text><text>意见反馈</text><text class="arr">›</text></view>
+    <div class="mi-divider"></div>
+    <view class="mi" bindtap="goRate"><text class="mi-icon">👍</text><text>去应用市场给鲨鱼记账评分</text><text class="arr">›</text></view>
+    <div class="mi-divider"></div>
+    <view class="mi" bindtap="goAbout"><text class="mi-icon">¥</text><text>关于鲨鱼记账 V5.59.0</text><text class="arr">›</text></view>
+  </view>
+
+  <view style="height:200rpx;"></view>
+
+  <!-- 浮动+按钮 -->
+  <view class="fab" style="bottom:170rpx;left:50%;margin-left:-56rpx;" bindtap="addRecord">
+    <text class="fab-icon">+</text>
   </view>
 </view>

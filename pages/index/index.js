@@ -1,189 +1,86 @@
 Page({
   data: {
-    viewMode: 'month',
-    currentDate: '',
-    displayDate: '',
-    totalExpense: 0,
-    totalIncome: 0,
-    balance: 0,
-    expenseCategories: [],
-    incomeCategories: []
+    period: 'week',
+    weekLabels: ['10周','11周','12周','13周'],
+    activeWeekIdx: 0,
+    totalExpense: '2101.00',
+    avgExpense: '300.14',
+    rightTotal: '1457.20',
+    rankList: [
+      { name: '日用', icon: '🧻', pct: '31.7%', amount: '666.9', barWidth: 100 },
+      { name: '汽车', icon: '🚗', pct: '24.2%', amount: '508', barWidth: 76 },
+      { name: '水电', icon: '⚡', pct: '21.3%', amount: '447.9', barWidth: 67 },
+      { name: '亲友', icon: '👨‍👩‍👧', pct: '11.1%', amount: '233.9', barWidth: 35 },
+      { name: '餐饮', icon: '🍴', pct: '7.5%', amount: '158.5', barWidth: 24 },
+      { name: '交通', icon: '🚌', pct: '1.4%', amount: '30.1', barWidth: 4 },
+      { name: '娱乐', icon: '🎤', pct: '1.1%', amount: '24', barWidth: 3 }
+    ]
   },
-  
-  onLoad: function () {
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = String(today.getMonth() + 1).padStart(2, '0');
-    const currentDate = `${year}-${month}`;
-    this.setData({
-      currentDate: currentDate
-    });
-    this.updateDisplayDate();
-    this.calculateData();
+
+  onLoad() {
+    this.loadData();
   },
-  
-  onShow: function() {
-    this.calculateData();
+  onShow() {
+    this.loadData();
   },
-  
-  switchViewMode: function(e) {
-    const mode = e.currentTarget.dataset.mode;
-    this.setData({
-      viewMode: mode
-    });
-    this.updateDisplayDate();
-    this.calculateData();
+
+  switchPeriod(e) {
+    this.setData({ period: e.currentTarget.dataset.p });
+    this.loadData();
   },
-  
-  onDateChange: function(e) {
-    const date = e.detail.value;
-    const year = date.substring(0, 4);
-    const month = date.substring(5, 7);
-    this.setData({
-      currentDate: `${year}-${month}`
-    });
-    this.updateDisplayDate();
-    this.calculateData();
+
+  pickWeek(e) {
+    this.setData({ activeWeekIdx: e.currentTarget.dataset.idx });
+    this.loadData();
   },
-  
-  prevPeriod: function() {
-    const date = new Date(this.data.currentDate);
-    if (this.data.viewMode === 'month') {
-      date.setMonth(date.getMonth() - 1);
-      const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, '0');
-      this.setData({
-        currentDate: `${year}-${month}`
-      });
-    } else {
-      date.setFullYear(date.getFullYear() - 1);
-      const year = date.getFullYear();
-      this.setData({
-        currentDate: `${year}-01`
-      });
-    }
-    this.updateDisplayDate();
-    this.calculateData();
-  },
-  
-  nextPeriod: function() {
-    const date = new Date(this.data.currentDate);
-    if (this.data.viewMode === 'month') {
-      date.setMonth(date.getMonth() + 1);
-      const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, '0');
-      this.setData({
-        currentDate: `${year}-${month}`
-      });
-    } else {
-      date.setFullYear(date.getFullYear() + 1);
-      const year = date.getFullYear();
-      this.setData({
-        currentDate: `${year}-01`
-      });
-    }
-    this.updateDisplayDate();
-    this.calculateData();
-  },
-  
-  updateDisplayDate: function() {
-    const dateParts = this.data.currentDate.split('-');
-    if (this.data.viewMode === 'month') {
-      this.setData({
-        displayDate: `${dateParts[0]}年${dateParts[1]}月`
-      });
-    } else {
-      this.setData({
-        displayDate: `${dateParts[0]}年`
-      });
-    }
-  },
-  
-  calculateData: function() {
+
+  loadData() {
     const records = wx.getStorageSync('records') || [];
-    const filteredRecords = this.filterRecordsByDate(records);
     
-    let totalExpense = 0;
-    let totalIncome = 0;
-    const expenseMap = {};
-    const incomeMap = {};
-    
-    const expenseIcons = {
-      '餐饮': '🍽️',
-      '交通': '🚗',
-      '购物': '🛍️',
-      '娱乐': '🎮',
-      '医疗': '🏥',
-      '教育': '📚',
-      '居住': '🏠',
-      '通讯': '📱',
-      '其他': '📦'
-    };
-    
-    const incomeIcons = {
-      '工资': '💼',
-      '奖金': '🎁',
-      '投资': '📈',
-      '兼职': '💻',
-      '其他': '💰'
-    };
-    
-    filteredRecords.forEach(record => {
-      if (record.type === 2) {
-        totalExpense += parseFloat(record.amount);
-        if (!expenseMap[record.category]) {
-          expenseMap[record.category] = 0;
-        }
-        expenseMap[record.category] += parseFloat(record.amount);
-      } else {
-        totalIncome += parseFloat(record.amount);
-        if (!incomeMap[record.category]) {
-          incomeMap[record.category] = 0;
-        }
-        incomeMap[record.category] += parseFloat(record.amount);
+    // 计算总支出
+    let total = 0;
+    const map = {};
+    records.forEach(r => {
+      if (r.type === 2) {
+        total += parseFloat(r.amount);
+        map[r.category] = (map[r.category] || 0) + parseFloat(r.amount);
       }
     });
-    
-    const expenseCategories = Object.keys(expenseMap).map(name => ({
-      name: name,
-      amount: expenseMap[name].toFixed(2),
-      percentage: totalExpense > 0 ? ((expenseMap[name] / totalExpense) * 100).toFixed(1) : 0,
-      icon: expenseIcons[name] || '📦'
+
+    // 排行榜
+    const list = Object.keys(map).map(k => ({
+      name: k,
+      icon: this.getCatIcon(k),
+      amount: map[k].toFixed(1),
+      pct: (map[k] / total * 100).toFixed(1) + '%',
+      barWidth: Math.round((map[k] / total) * 100)
     })).sort((a, b) => parseFloat(b.amount) - parseFloat(a.amount));
-    
-    const incomeCategories = Object.keys(incomeMap).map(name => ({
-      name: name,
-      amount: incomeMap[name].toFixed(2),
-      percentage: totalIncome > 0 ? ((incomeMap[name] / totalIncome) * 100).toFixed(1) : 0,
-      icon: incomeIcons[name] || '💰'
-    })).sort((a, b) => parseFloat(b.amount) - parseFloat(a.amount));
-    
-    const balance = totalIncome - totalExpense;
-    
+
     this.setData({
-      totalExpense: totalExpense.toFixed(2),
-      totalIncome: totalIncome.toFixed(2),
-      balance: balance.toFixed(2) || '0.00',
-      expenseCategories: expenseCategories,
-      incomeCategories: incomeCategories
+      totalExpense: total.toFixed(2),
+      avgExpense: (total / Math.max(records.filter(r => r.type === 2).length, 1)).toFixed(2),
+      rankList: list
     });
+
+    // 绘制图表
+    setTimeout(() => this.drawChart(list), 300);
   },
-  
-  filterRecordsByDate: function(records) {
-    const dateParts = this.data.currentDate.split('-');
-    const targetYear = parseInt(dateParts[0]);
-    const targetMonth = parseInt(dateParts[1]);
-    
-    return records.filter(record => {
-      const recordDate = new Date(record.date);
-      const recordYear = recordDate.getFullYear();
-      const recordMonth = recordDate.getMonth() + 1;
-      
-      if (this.data.viewMode === 'month') {
-        return recordYear === targetYear && recordMonth === targetMonth;
-      } else {
-        return recordYear === targetYear;
-      }
-    });
+
+  getCatIcon(name) {
+    const m = {
+      '餐饮':'🍴','交通':'🚌','购物':'🛍','娱乐':'🎤',
+      '医疗':'💊','日用':'🧻','彩票':'🎫','水电':'⚡',
+      '亲友':'👨‍👩‍👧','汽车':'🚗'
+    };
+    return m[name] || '📦';
+  },
+
+  drawChart(data) {
+    if (!data.length) return;
+    // 简易绘制 - 可后续用canvas API实现完整折线图
+  },
+
+  addRecord() {
+    wx.switchTab({ url: '/pages/addRecord/addRecord' });
   }
-})
+});

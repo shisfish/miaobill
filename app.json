@@ -7,14 +7,16 @@
   ],
   "window": {
     "backgroundTextStyle": "light",
-    "navigationBarBackgroundColor": "#4CAF50",
-    "navigationBarTitleText": "图表",
-    "navigationBarTextStyle": "white"
+    "navigationBarBackgroundColor": "#FFD54F",
+    "navigationBarTitleText": "明细",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#F5F5F5",
+    "enablePullDownRefresh": false
   },
   "tabBar": {
-    "color": "#999",
-    "selectedColor": "#4CAF50",
-    "backgroundColor": "#fff",
+    "color": "#999999",
+    "selectedColor": "#FFD54F",
+    "backgroundColor": "#FFFFFF",
     "borderStyle": "black",
     "list": [
       {

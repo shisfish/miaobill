@@ -1,280 +1,171 @@
+/* ========== 明细页 ========== */
 .container {
-  background-color: #f5f5f5;
+  background-color: #F5F5F5;
   min-height: 100vh;
-  padding-bottom: 120rpx;
-}
-
-/* 顶部黄色统计区域 */
-.header-section {
-  background-color: #FFD93D;
-  padding: 20rpx 40rpx 40rpx;
-}
-
-.year-row {
-  margin-bottom: 20rpx;
-}
-
-.year-text {
-  font-size: 24rpx;
-  color: rgba(0, 0, 0, 0.6);
-}
-
-.month-stats-row {
-  display: flex;
-  align-items: center;
-}
-
-.month-selector {
-  display: flex;
-  align-items: baseline;
-}
-
-.month-num {
-  font-size: 72rpx;
-  font-weight: 500;
-  color: #333;
-  line-height: 1;
-}
-
-.month-text {
-  font-size: 32rpx;
-  color: #333;
-  margin-left: 4rpx;
-}
-
-.month-arrow {
-  font-size: 24rpx;
-  color: #333;
-  margin-left: 12rpx;
-}
-
-.divider {
-  width: 2rpx;
-  height: 80rpx;
-  background-color: rgba(0, 0, 0, 0.15);
-  margin: 0 40rpx;
-}
-
-.stat-col {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
 }
 
-.expense-col {
-  margin-left: auto;
+/* ---- 黄色顶栏 ---- */
+.header {
+  background-color: #FFD54F;
+  padding: 30rpx 40rpx 40rpx;
+}
+
+.header-content {
+  display: flex;
   align-items: flex-end;
 }
 
-.stat-label-header {
-  font-size: 24rpx;
-  color: rgba(0, 0, 0, 0.6);
+.month-block {
+  display: flex;
+  flex-direction: column;
+}
+
+.header-year {
+  font-size: 20rpx;
+  color: rgba(0,0,0,0.5);
+  margin-bottom: 2rpx;
+  display: block;
+}
+
+.month-picker {
+  display: flex;
+  align-items: baseline;
+  margin-left: -4rpx;
+}
+
+.month-num {
+  font-size: 80rpx;
+  font-weight: 500;
+  color: #222222;
+  line-height: 1;
+}
+
+.month-label {
+  font-size: 26rpx;
+  color: #222222;
+  margin-left: 2rpx;
+  font-weight: 500;
+}
+
+.arrow-down {
+  font-size: 16rpx;
+  color: #222222;
+  margin-left: 10rpx;
+}
+
+.header-divider {
+  width: 1rpx;
+  height: 48rpx;
+  background-color: rgba(0,0,0,0.1);
+  margin: 0 40rpx 10rpx;
+}
+
+.stats-block {
+  flex: 1;
+  display: flex;
+  gap: 80rpx;
   margin-bottom: 8rpx;
 }
 
-.stat-value-header {
+.stat-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-lbl {
+  font-size: 22rpx;
+  color: rgba(0,0,0,0.5);
+  margin-bottom: 12rpx;
+}
+
+.stat-val {
+  font-size: 36rpx;
+  color: #222222;
+  font-weight: 400;
+  line-height: 1;
+}
+
+.stat-val.large {
   font-size: 40rpx;
-  font-weight: 500;
-  color: #333;
+  font-weight: 400;
 }
 
-.expense-value {
-  font-size: 48rpx;
-  font-weight: 600;
-}
-
-.record-list {
-  padding: 0;
-}
-
-.date-group {
-  margin-bottom: 0;
-}
-
+/* ---- 日期分组头 ---- */
 .date-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 24rpx 32rpx;
-  background-color: #f5f5f5;
+  padding: 18rpx 32rpx;
+  background-color: #FAFAFA;
+  border-bottom: 1rpx solid #F0F0F0;
 }
 
 .date-text {
-  font-size: 26rpx;
-  color: #999;
-}
-
-.date-expense {
   font-size: 24rpx;
-  color: #999;
+  color: #999999;
 }
 
-.date-records {
-  background-color: white;
+.date-total {
+  font-size: 24rpx;
+  color: #999999;
 }
 
+/* ---- 记录项 ---- */
 .record-item {
   display: flex;
-  justify-content: space-between;
   align-items: center;
   padding: 28rpx 32rpx;
-  border-bottom: 1rpx solid #f5f5f5;
+  background-color: #FFFFFF;
+  border-bottom: 1rpx solid #F5F5F5;
 }
 
 .record-item:last-child {
-  border-bottom: 1rpx solid #f5f5f5;
+  border-bottom: none;
 }
 
-.record-left {
-  display: flex;
-  align-items: center;
-  gap: 24rpx;
+.record-cat {
   flex: 1;
-}
-
-.category-icon-circle {
-  width: 72rpx;
-  height: 72rpx;
-  border-radius: 50%;
-  background-color: #FFD93D;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.category-icon {
-  font-size: 36rpx;
-}
-
-.record-category {
+  margin-left: 20rpx;
   font-size: 30rpx;
-  color: #333;
+  color: #333333;
 }
 
-.record-right {
-  display: flex;
-  align-items: center;
-}
-
-.record-amount {
-  font-size: 32rpx;
-  font-weight: 500;
-  color: #333;
-}
-
-.record-amount.expense {
-  color: #333;
-}
-
-.record-amount.income {
-  color: #4CAF50;
-}
-
-.empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 200rpx 0;
-  gap: 20rpx;
-}
-
-.empty-icon {
-  font-size: 100rpx;
-  opacity: 0.5;
-}
-
-.empty-text {
+.record-amt {
   font-size: 30rpx;
-  color: #999;
+  color: #333333;
   font-weight: 500;
 }
 
-.empty-hint {
-  font-size: 24rpx;
-  color: #bbb;
-}
-
-/* 悬浮添加按钮 */
-.fab-add {
-  position: fixed;
-  bottom: 140rpx;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 120rpx;
-  height: 120rpx;
-  border-radius: 50%;
-  background-color: #FFD93D;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 8rpx 24rpx rgba(255, 217, 61, 0.4);
-  z-index: 100;
-}
-
-.fab-icon {
-  font-size: 60rpx;
-  color: #333;
-  font-weight: 300;
-}
-
-/* 月份选择弹窗 */
-.picker-mask {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  z-index: 1000;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-}
-
-.picker-content {
-  background-color: white;
+/* ---- 选择器弹窗 ---- */
+.picker-panel {
+  background-color: #FFFFFF;
   border-radius: 24rpx 24rpx 0 0;
   overflow: hidden;
 }
 
-.picker-header {
+.picker-head {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 32rpx;
-  border-bottom: 1rpx solid #f0f0f0;
-}
-
-.picker-cancel {
-  font-size: 30rpx;
-  color: #999;
+  padding: 30rpx 32rpx;
+  border-bottom: 1rpx solid #E8E8E8;
 }
 
 .picker-title {
   font-size: 32rpx;
-  font-weight: 500;
-  color: #333;
+  font-weight: 600;
+  color: #222222;
 }
 
-.picker-confirm {
-  font-size: 30rpx;
-  color: #FFD93D;
-  font-weight: 500;
+.picker-cancel,
+.picker-ok {
+  font-size: 28rpx;
+  color: #888888;
 }
+.picker-ok { color: #FFD54F; font-weight: 600; }
 
-.picker-body {
-  height: 480rpx;
-}
-
-.picker-view {
-  height: 100%;
-}
-
-.picker-item {
-  line-height: 96rpx;
-  text-align: center;
-  font-size: 36rpx;
-  color: #333;
-}
+.picker-body { padding: 20rpx 0; }
+.pv { height: 420rpx; }
+.pi { line-height: 84rpx; text-align: center; font-size: 34rpx; color: #333; }
