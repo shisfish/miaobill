@@ -1,204 +1,105 @@
 .container {
-  background-color: #f5f5f5;
-  min-height: 100vh;
-  padding-bottom: 20rpx;
+  padding: 16px;
+  padding-bottom: 100px;
 }
 
-.user-section {
-  background: linear-gradient(135deg, #4CAF50, #45a049);
-  padding: 40rpx 32rpx;
-}
-
+/* 个人信息样式 */
 .user-info {
   display: flex;
   align-items: center;
-  gap: 24rpx;
-  margin-bottom: 32rpx;
+  padding: 16px;
 }
 
 .avatar {
-  width: 120rpx;
-  height: 120rpx;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
-  background-color: rgba(255, 255, 255, 0.3);
+  background-color: #1E88E5;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
+  margin-right: 16px;
 }
 
 .avatar-text {
-  font-size: 48rpx;
-  font-weight: bold;
-  color: white;
+  font-size: 24px;
+  font-weight: 600;
+  color: #fff;
 }
 
 .user-details {
   flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 8rpx;
 }
 
 .user-name {
-  font-size: 36rpx;
-  font-weight: bold;
-  color: white;
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 4px;
+  display: block;
 }
 
 .user-id {
-  font-size: 24rpx;
-  color: rgba(255, 255, 255, 0.8);
+  font-size: 14px;
+  color: #999;
 }
 
-.checkin-btn {
-  background-color: white;
-  padding: 16rpx 32rpx;
-  border-radius: 40rpx;
-  flex-shrink: 0;
+.login-btn {
+  padding: 8px 16px;
+  border-radius: 4px;
+  border: 1px solid #1E88E5;
 }
 
-.checkin-text {
-  font-size: 28rpx;
-  font-weight: bold;
-  color: #4CAF50;
+.login-btn-text {
+  font-size: 14px;
+  color: #1E88E5;
 }
 
-.stats-section {
-  display: flex;
-  justify-content: space-around;
-  background-color: rgba(255, 255, 255, 0.15);
-  border-radius: 16rpx;
-  padding: 32rpx 0;
+/* 卡片头部样式 */
+.card-header {
+  padding: 12px 16px;
+  border-bottom: 1px solid #f0f0f0;
 }
 
-.stat-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8rpx;
+/* 菜单列表样式 */
+.menu-list {
+  margin-top: 0;
 }
 
-.stat-value {
-  font-size: 40rpx;
-  font-weight: bold;
-  color: white;
-}
-
-.stat-label {
-  font-size: 24rpx;
-  color: rgba(255, 255, 255, 0.8);
-}
-
-.vip-section {
-  margin: 20rpx 32rpx;
-  background: linear-gradient(135deg, #FFD700, #FFA500);
-  border-radius: 16rpx;
-  padding: 32rpx;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  box-shadow: 0 4rpx 12rpx rgba(255, 215, 0, 0.3);
-}
-
-.vip-content {
+.menu-item {
   display: flex;
   align-items: center;
-  gap: 16rpx;
+  padding: 16px;
+  border-bottom: 1px solid #f0f0f0;
 }
 
-.vip-icon {
-  font-size: 48rpx;
+.menu-item:last-child {
+  border-bottom: none;
 }
 
-.vip-text {
-  font-size: 32rpx;
-  font-weight: bold;
-  color: #8B4513;
+.menu-icon {
+  font-size: 20px;
+  margin-right: 12px;
 }
 
-.vip-desc {
-  font-size: 24rpx;
-  color: #A0522D;
-  margin-left: 8rpx;
-}
-
-.arrow {
-  font-size: 40rpx;
-  color: rgba(0, 0, 0, 0.3);
-}
-
-.menu-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8rpx;
-  margin: 0 24rpx 20rpx;
-  background-color: white;
-  border-radius: 16rpx;
-  padding: 32rpx 16rpx;
-  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
-}
-
-.menu-grid .menu-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12rpx;
-  padding: 16rpx 0;
-  position: relative;
-}
-
-.menu-grid .menu-icon {
-  font-size: 48rpx;
-}
-
-.menu-grid .menu-text {
-  font-size: 24rpx;
-  color: #333;
-}
-
-.badge {
-  position: absolute;
-  top: 8rpx;
-  right: 16rpx;
-  font-size: 24rpx;
-  color: #F44336;
-}
-
-.card {
-  margin: 0 32rpx 20rpx;
-  background-color: white;
-  border-radius: 16rpx;
-  padding: 0 32rpx;
-  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
-}
-
-.card .menu-item {
-  display: flex;
-  align-items: center;
-  padding: 32rpx 0;
-  position: relative;
-}
-
-.card .menu-icon {
-  font-size: 40rpx;
-  margin-right: 20rpx;
-}
-
-.card .menu-text {
+.menu-text {
   flex: 1;
-  font-size: 28rpx;
+  font-size: 14px;
   color: #333;
 }
 
-.risk-level {
-  font-size: 24rpx;
-  color: #FF9800;
-  margin-right: 8rpx;
+.menu-arrow {
+  font-size: 16px;
+  color: #999;
 }
 
-.menu-divider {
-  height: 1rpx;
-  background-color: #f0f0f0;
-  margin-left: 60rpx;
+.menu-value {
+  font-size: 14px;
+  color: #999;
+  margin-right: 8px;
+}
+
+/* 开关样式 */
+switch {
+  transform: scale(0.8);
 }

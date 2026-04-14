@@ -1,121 +1,84 @@
 <view class="container">
-  <!-- 顶部导航栏 -->
-  <view class="nav-bar">
-    <text class="nav-title">我的</text>
-  </view>
-  
-  <!-- 用户信息和打卡 -->
-  <view class="user-section">
+  <!-- 个人信息 -->
+  <view class="card">
     <view class="user-info">
       <view class="avatar">
-        <text class="avatar-text">{{userInfo.nickName ? userInfo.nickName.charAt(0) : '用'}}</text>
+        <text class="avatar-text">{{userInfo.nickName.charAt(0)}}</text>
       </view>
       <view class="user-details">
         <text class="user-name">{{userInfo.nickName || '未登录'}}</text>
         <text class="user-id">{{userInfo.openId ? 'ID: ' + userInfo.openId.substring(0, 8) + '...' : '点击登录'}}</text>
       </view>
-      <view class="checkin-btn" bindtap="checkin">
-        <text class="checkin-text">{{hasCheckedToday ? '已打卡' : '打卡'}}</text>
-      </view>
-    </view>
-    
-    <!-- 统计数据 -->
-    <view class="stats-section">
-      <view class="stat-item">
-        <text class="stat-value">{{checkinDays}}</text>
-        <text class="stat-label">已连续打卡</text>
-      </view>
-      <view class="stat-item">
-        <text class="stat-value">{{totalDays}}</text>
-        <text class="stat-label">记账总天数</text>
-      </view>
-      <view class="stat-item">
-        <text class="stat-value">{{totalRecords}}</text>
-        <text class="stat-label">记账总笔数</text>
+      <view class="login-btn" bindtap="login">
+        <text class="login-btn-text">{{userInfo.openId ? '已登录' : '登录'}}</text>
       </view>
     </view>
   </view>
   
-  <!-- VIP 升级卡片 -->
-  <view class="vip-section" bindtap="upgradeVIP">
-    <view class="vip-content">
-      <text class="vip-icon">👑</text>
-      <text class="vip-text">升级为VIP</text>
-      <text class="vip-desc">畅享更多高级功能</text>
-    </view>
-    <text class="arrow">›</text>
-  </view>
-  
-  <!-- 功能菜单 -->
-  <view class="menu-grid">
-    <view class="menu-item" bindtap="showNotifications">
-      <text class="menu-icon">🔔</text>
-      <text class="menu-text">消息</text>
-    </view>
-    <view class="menu-item" bindtap="showBadges">
-      <text class="menu-icon">🏅</text>
-      <text class="menu-text">我的徽章</text>
-    </view>
-    <view class="menu-item" bindtap="showPoints">
-      <text class="menu-icon">⭐</text>
-      <text class="menu-text">我的积分</text>
-    </view>
-    <view class="menu-item" bindtap="showSettings">
-      <text class="menu-icon">⚙️</text>
-      <text class="menu-text">设置</text>
-      <text class="badge" wx:if="{{showBadge}}">●</text>
-    </view>
-  </view>
-  
-  <!-- 我的账本 -->
+  <!-- 数据管理 -->
   <view class="card">
-    <view class="menu-item" bindtap="showMyBooks">
-      <text class="menu-icon">📒</text>
-      <text class="menu-text">我的账本</text>
-      <text class="arrow">›</text>
+    <view class="card-header">
+      <text class="subtitle">数据管理</text>
     </view>
-    <view class="menu-divider"></view>
-    <view class="menu-item" bindtap="showFamilyBill">
-      <text class="menu-icon">🏠</text>
-      <text class="menu-text">家庭账单</text>
-      <text class="arrow">›</text>
-    </view>
-  </view>
-  
-  <!-- 设置和安全 -->
-  <view class="card">
-    <view class="menu-item" bindtap="showSettings">
-      <text class="menu-icon">⚙️</text>
-      <text class="menu-text">设置</text>
-      <text class="arrow">›</text>
-    </view>
-    <view class="menu-divider"></view>
-    <view class="menu-item" bindtap="showSecurity">
-      <text class="menu-icon">🛡️</text>
-      <text class="menu-text">账户安全中心</text>
-      <text class="risk-level">中风险</text>
-      <text class="arrow">›</text>
+    <view class="menu-list">
+      <view class="menu-item" bindtap="exportData">
+        <text class="menu-icon">📤</text>
+        <text class="menu-text">导出数据</text>
+        <text class="menu-arrow">›</text>
+      </view>
+      <view class="menu-item" bindtap="clearData">
+        <text class="menu-icon">🗑️</text>
+        <text class="menu-text">清除数据</text>
+        <text class="menu-arrow">›</text>
+      </view>
+      <view class="menu-item" bindtap="backupData">
+        <text class="menu-icon">💾</text>
+        <text class="menu-text">备份数据</text>
+        <text class="menu-arrow">›</text>
+      </view>
     </view>
   </view>
   
-  <!-- 其他 -->
+  <!-- 设置 -->
   <view class="card">
-    <view class="menu-item" bindtap="showFeedback">
-      <text class="menu-icon">✏️</text>
-      <text class="menu-text">意见反馈</text>
-      <text class="arrow">›</text>
+    <view class="card-header">
+      <text class="subtitle">设置</text>
     </view>
-    <view class="menu-divider"></view>
-    <view class="menu-item" bindtap="rateApp">
-      <text class="menu-icon">👍</text>
-      <text class="menu-text">去应用市场给杪记评分</text>
-      <text class="arrow">›</text>
+    <view class="menu-list">
+      <view class="menu-item" bindtap="toggleReminder">
+        <text class="menu-icon">🔔</text>
+        <text class="menu-text">记账提醒</text>
+        <switch checked="{{settings.reminder}}" bindchange="onReminderChange" />
+      </view>
+      <view class="menu-item" bindtap="selectCurrency">
+        <text class="menu-icon">💱</text>
+        <text class="menu-text">货币单位</text>
+        <text class="menu-value">{{settings.currency}}</text>
+      </view>
+      <view class="menu-item" bindtap="selectTheme">
+        <text class="menu-icon">🎨</text>
+        <text class="menu-text">主题设置</text>
+        <text class="menu-value">{{settings.theme === 'light' ? '浅色' : '深色'}}</text>
+      </view>
     </view>
-    <view class="menu-divider"></view>
-    <view class="menu-item" bindtap="showAbout">
-      <text class="menu-icon">💰</text>
-      <text class="menu-text">关于杪记 V1.0.0</text>
-      <text class="arrow">›</text>
+  </view>
+  
+  <!-- 关于 -->
+  <view class="card">
+    <view class="card-header">
+      <text class="subtitle">关于</text>
+    </view>
+    <view class="menu-list">
+      <view class="menu-item" bindtap="showAbout">
+        <text class="menu-icon">ℹ️</text>
+        <text class="menu-text">关于杪记</text>
+        <text class="menu-arrow">›</text>
+      </view>
+      <view class="menu-item" bindtap="checkUpdate">
+        <text class="menu-icon">🔄</text>
+        <text class="menu-text">检查更新</text>
+        <text class="menu-value">v1.0.0</text>
+      </view>
     </view>
   </view>
 </view>

@@ -2,45 +2,39 @@
   "pages": [
     "pages/index/index",
     "pages/statistics/statistics",
-    "pages/addRecord/addRecord",
-    "pages/discover/discover",
-    "pages/mine/mine"
+    "pages/budget/budget",
+    "pages/mine/mine",
+    "pages/addRecord/addRecord"
   ],
   "window": {
     "backgroundTextStyle": "light",
-    "navigationBarBackgroundColor": "#4CAF50",
+    "navigationBarBackgroundColor": "#1E88E5",
     "navigationBarTitleText": "杪记",
     "navigationBarTextStyle": "white"
   },
   "tabBar": {
     "color": "#999",
-    "selectedColor": "#4CAF50",
+    "selectedColor": "#1E88E5",
     "backgroundColor": "#fff",
     "borderStyle": "black",
     "list": [
       {
-        "pagePath": "pages/statistics/statistics",
-        "text": "明细",
+        "pagePath": "pages/index/index",
+        "text": "首页",
         "iconPath": "icons/home.png",
         "selectedIconPath": "icons/home-active.png"
       },
       {
-        "pagePath": "pages/index/index",
-        "text": "图表",
+        "pagePath": "pages/statistics/statistics",
+        "text": "统计",
         "iconPath": "icons/chart.png",
         "selectedIconPath": "icons/chart-active.png"
       },
       {
-        "pagePath": "pages/addRecord/addRecord",
-        "text": "记账",
+        "pagePath": "pages/budget/budget",
+        "text": "预算",
         "iconPath": "icons/budget.png",
         "selectedIconPath": "icons/budget-active.png"
-      },
-      {
-        "pagePath": "pages/discover/discover",
-        "text": "发现",
-        "iconPath": "icons/chart.png",
-        "selectedIconPath": "icons/chart-active.png"
       },
       {
         "pagePath": "pages/mine/mine",

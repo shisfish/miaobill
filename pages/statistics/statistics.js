@@ -1,160 +1,114 @@
+// 分类数据
+const categories = [
+  // 收入分类
+  { name: '工资', icon: '💰', type: 1 },
+  { name: '奖金', icon: '🏆', type: 1 },
+  { name: '投资', icon: '📈', type: 1 },
+  { name: '其他', icon: '➕', type: 1 },
+  
+  // 支出分类
+  { name: '餐饮', icon: '🍽️', type: 2 },
+  { name: '交通', icon: '🚗', type: 2 },
+  { name: '购物', icon: '🛍️', type: 2 },
+  { name: '娱乐', icon: '🎬', type: 2 },
+  { name: '医疗', icon: '🏥', type: 2 },
+  { name: '教育', icon: '📚', type: 2 },
+  { name: '住房', icon: '🏠', type: 2 },
+  { name: '其他', icon: '📋', type: 2 }
+];
+
 Page({
   data: {
-    timeFilter: 'all',
-    filteredRecords: [],
-    groupedRecords: [],
+    selectedMonth: new Date().toISOString().split('T')[0].substring(0, 7),
     monthIncome: 0,
     monthExpense: 0,
-    monthBalance: 0
+    balance: 0,
+    activeType: 2, // 默认支出
+    categoryDetails: []
   },
   
   onLoad: function () {
-    this.loadRecords();
+    this.updateData();
   },
   
-  onShow: function() {
-    this.loadRecords();
+  onShow: function () {
+    this.updateData();
   },
   
-  loadRecords: function() {
+  // 月份选择
+  onMonthChange: function(e) {
+    this.setData({
+      selectedMonth: e.detail.value
+    });
+    this.updateData();
+  },
+  
+  // 切换收支类型
+  switchType: function(e) {
+    const type = parseInt(e.currentTarget.dataset.type);
+    this.setData({
+      activeType: type
+    });
+    this.updateData();
+  },
+  
+  // 更新数据
+  updateData: function() {
     const records = wx.getStorageSync('records') || [];
-    const filteredRecords = this.filterRecords(records);
-    const groupedRecords = this.groupRecordsByDate(filteredRecords);
-    const monthStats = this.calculateMonthStats(records);
+    const { selectedMonth, activeType } = this.data;
     
-    this.setData({
-      filteredRecords: filteredRecords,
-      groupedRecords: groupedRecords,
-      monthIncome: monthStats.income,
-      monthExpense: monthStats.expense,
-      monthBalance: monthStats.balance
-    });
-  },
-  
-  setTimeFilter: function(e) {
-    const filter = e.currentTarget.dataset.filter;
-    this.setData({
-      timeFilter: filter
-    });
-    this.loadRecords();
-  },
-  
-  filterRecords: function(records) {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    // 筛选当月记录
+    const monthRecords = records.filter(record => record.date.substring(0, 7) === selectedMonth);
     
-    let filtered = [...records];
+    // 计算当月收支
+    const monthIncome = monthRecords.filter(record => record.type === 1).reduce((sum, record) => sum + record.amount, 0);
+    const monthExpense = monthRecords.filter(record => record.type === 2).reduce((sum, record) => sum + record.amount, 0);
+    const balance = monthIncome - monthExpense;
     
-    switch (this.data.timeFilter) {
-      case 'today':
-        const todayStr = today.toISOString().split('T')[0];
-        filtered = records.filter(r => r.date === todayStr);
-        break;
-      case 'week':
-        const weekStart = new Date(today);
-        weekStart.setDate(today.getDate() - today.getDay());
-        weekStart.setHours(0, 0, 0, 0);
-        filtered = records.filter(r => new Date(r.date) >= weekStart);
-        break;
-      case 'month':
-        const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
-        filtered = records.filter(r => new Date(r.date) >= monthStart);
-        break;
-    }
+    // 计算分类明细
+    const typeRecords = monthRecords.filter(record => record.type === activeType);
+    const categoryMap = {};
     
-    return filtered.sort((a, b) => {
-      const dateA = new Date(a.date + ' ' + a.time);
-      const dateB = new Date(b.date + ' ' + b.time);
-      return dateB - dateA;
-    });
-  },
-  
-  groupRecordsByDate: function(records) {
-    const groups = {};
-    
-    records.forEach(record => {
-      if (!groups[record.date]) {
-        groups[record.date] = [];
-      }
-        groups[record.date].push(record);
-    });
-    
-    const result = Object.keys(groups).sort((a, b) => new Date(b) - new Date(a)).map(date => {
-      const dateObj = new Date(date);
-      const month = dateObj.getMonth() + 1;
-      const day = dateObj.getDate();
-      const weekdays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
-      const weekday = weekdays[dateObj.getDay()];
-      
-      let dayBalance = 0;
-      groups[date].forEach(r => {
-        if (r.type === 1) {
-          dayBalance += parseFloat(r.amount);
-        } else {
-          dayBalance -= parseFloat(r.amount);
-        }
-      });
-      
-      return {
-        date: date,
-        dateText: `${month}月${day}日 ${weekday}`,
-        records: groups[date],
-        dayBalance: dayBalance.toFixed(2)
-      };
-    });
-    
-    return result;
-  },
-  
-  calculateMonthStats: function(records) {
-    const today = new Date();
-    const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
-    
-    let income = 0;
-    let expense = 0;
-    
-    records.forEach(record => {
-      const recordDate = new Date(record.date);
-      if (recordDate >= monthStart) {
-        if (record.type === 1) {
-          income += parseFloat(record.amount);
-        } else {
-          expense += parseFloat(record.amount);
-        }
+    // 统计各分类金额
+    typeRecords.forEach(record => {
+      if (categoryMap[record.category]) {
+        categoryMap[record.category] += record.amount;
+      } else {
+        categoryMap[record.category] = record.amount;
       }
     });
     
-    return {
-      income: income.toFixed(2),
-      expense: expense.toFixed(2),
-      balance: (income - expense).toFixed(2)
-    };
-  },
-  
-  getCategoryIcon: function(category) {
-    const icons = {
-      '餐饮': '🍽️',
-      '交通': '🚗',
-      '购物': '🛍️',
-      '娱乐': '🎮',
-      '医疗': '🏥',
-      '教育': '📚',
-      '居住': '🏠',
-      '通讯': '📱',
-      '工资': '💼',
-      '奖金': '🎁',
-      '投资': '📈',
-      '兼职': '💻',
-      '其他': '📦'
-    };
-    return icons[category] || '📦';
-  },
-  
-  viewRecord: function(e) {
-    const id = e.currentTarget.dataset.id;
-    wx.showToast({
-      title: '查看详情功能开发中',
-      icon: 'none'
+    // 计算总金额
+    const totalAmount = Object.values(categoryMap).reduce((sum, amount) => sum + amount, 0);
+    
+    // 生成分类明细
+    const categoryDetails = Object.entries(categoryMap).map(([category, amount]) => ({
+      category: category,
+      amount: amount.toFixed(2),
+      percentage: totalAmount > 0 ? Math.round((amount / totalAmount) * 100) : 0
+    })).sort((a, b) => parseFloat(b.amount) - parseFloat(a.amount));
+    
+    this.setData({
+      monthIncome: monthIncome.toFixed(2),
+      monthExpense: monthExpense.toFixed(2),
+      balance: balance.toFixed(2),
+      categoryDetails: categoryDetails
     });
+    
+    // 绘制饼图（后续可以引入ECharts实现）
+    this.drawPieChart(categoryDetails, totalAmount);
+  },
+  
+  // 绘制饼图
+  drawPieChart: function(categoryDetails, totalAmount) {
+    // 这里可以使用ECharts绘制饼图
+    // 由于微信小程序中使用ECharts需要先引入库，这里暂时省略
+    console.log('绘制饼图', categoryDetails, totalAmount);
+  },
+  
+  // 获取分类图标
+  getCategoryIcon: function(categoryName) {
+    const category = categories.find(cat => cat.name === categoryName);
+    return category ? category.icon : '📋';
   }
 })
