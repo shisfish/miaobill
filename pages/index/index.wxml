@@ -115,10 +115,5 @@
 
   <view class="bottom-spacer"></view>
 
-  <!-- 悬浮记账按钮 -->
-  <view class="fab" bindtap="addRecord">
-    <view class="fab-circle">
-      <text class="fab-icon">+</text>
-    </view>
-  </view>
+  <floating-action-button bind:tap="addRecord" />
 </view>

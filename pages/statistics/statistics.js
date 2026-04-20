@@ -7,10 +7,17 @@ Page({
     currentYear: 2026,
     currentMonth: 4,
     showMonthPicker: false,
-    years: [2024, 2025, 2026, 2027, 2028],
+    years: (function() {
+      const now = new Date();
+      const startYear = 2015;
+      const endYear = now.getFullYear() + 1;
+      const arr = [];
+      for (let y = startYear; y <= endYear; y++) arr.push(y);
+      return arr;
+    })(),
     months: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-    pickerValue: [2, 3],
-    tempPickerValue: [2, 3]
+    pickerValue: [11, 3],
+    tempPickerValue: [11, 3]
   },
 
   onLoad: function () {
@@ -148,38 +155,35 @@ Page({
     };
   },
 
-  // 显示月份选择器
+  onMonthChange: function() {},
+
   showMonthPicker: function() {
     const { years, months, currentYear, currentMonth } = this.data;
     const yearIndex = years.indexOf(currentYear);
     const monthIndex = months.indexOf(currentMonth);
     this.setData({
       showMonthPicker: true,
-      pickerValue: [yearIndex, monthIndex],
-      tempPickerValue: [yearIndex, monthIndex]
+      pickerValue: [yearIndex >= 0 ? yearIndex : 0, monthIndex],
+      tempPickerValue: [yearIndex >= 0 ? yearIndex : 0, monthIndex]
     });
   },
 
-  // 隐藏月份选择器
   hideMonthPicker: function() {
     this.setData({
       showMonthPicker: false
     });
   },
 
-  // 选择器变化
   onPickerChange: function(e) {
     this.setData({
       tempPickerValue: e.detail.value
     });
   },
 
-  // 确认选择
   confirmMonth: function() {
     const { years, months, tempPickerValue } = this.data;
     const selectedYear = years[tempPickerValue[0]];
     const selectedMonth = months[tempPickerValue[1]];
-
     this.setData({
       currentYear: selectedYear,
       currentMonth: selectedMonth,
@@ -189,10 +193,7 @@ Page({
     });
   },
 
-  // 阻止冒泡
-  stopPropagation: function() {
-    // 什么都不做，只是阻止事件冒泡
-  },
+  stopPropagation: function() {},
   
   getCategoryIcon: function(category) {
     const icons = {

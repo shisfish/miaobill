@@ -1,0 +1,5 @@
+<view class="fab" bindtap="onTap">
+  <view class="fab-circle">
+    <text class="fab-icon">+</text>
+  </view>
+</view>

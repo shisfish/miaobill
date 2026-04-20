@@ -44,12 +44,7 @@
     <view style="height:200rpx;"></view>
   </scroll-view>
 
-  <!-- 悬浮记账按钮 -->
-  <view class="fab" bindtap="addRecord">
-    <view class="fab-circle">
-      <text class="fab-icon">+</text>
-    </view>
-  </view>
+  <floating-action-button bind:tap="addRecord" />
 
   <view wx:if="{{showMonthPicker}}" class="mask" bindtap="hideMonthPicker">
     <view class="picker-panel" catchtap="stopPropagation">
