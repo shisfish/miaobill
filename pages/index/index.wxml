@@ -1,76 +1,121 @@
-<view class="container">
-  <!-- 黄色头部 -->
-  <view class="header">
-    <view class="header-row">
-      <text class="header-title">支出</text>
-      <text class="arrow-down">▾</text>
+<view class="page">
+  <view class="hero-card">
+    <view class="hero-top">
+      <view>
+        <text class="hero-kicker">本月支出</text>
+        <view class="hero-title-row">
+          <text class="hero-title">支出</text>
+          <text class="hero-arrow">▾</text>
+        </view>
+      </view>
+      <view class="hero-badge">{{hasRealData ? '真实数据' : '模拟数据'}}</view>
     </view>
+
+    <view class="amount-row">
+      <text class="amount-prefix">¥</text>
+      <text class="amount-value">{{totalExpense || '0.00'}}</text>
+    </view>
+
+    <view class="meta-row">
+      <view class="meta-item">
+        <text class="meta-label">人均</text>
+        <text class="meta-value">¥{{avgExpense || '0.00'}}</text>
+      </view>
+      <view class="meta-divider"></view>
+      <view class="meta-item meta-right">
+        <text class="meta-label">余额</text>
+        <text class="meta-value">¥{{rightTotal || '0.00'}}</text>
+      </view>
+    </view>
+
     <view class="period-tabs">
-      <text class="p-tab {{period==='week'?'active':''}}" bindtap="switchPeriod" data-p="week">周</text>
-      <text class="p-tab {{period==='month'?'active':''}}" bindtap="switchPeriod" data-p="month">月</text>
-      <text class="p-tab {{period==='year'?'active':''}}" bindtap="switchPeriod" data-p="year">年</text>
+      <text class="period-tab {{period==='week'?'active':''}}" bindtap="switchPeriod" data-p="week">周</text>
+      <text class="period-tab {{period==='month'?'active':''}}" bindtap="switchPeriod" data-p="month">月</text>
+      <text class="period-tab {{period==='year'?'active':''}}" bindtap="switchPeriod" data-p="year">年</text>
     </view>
   </view>
 
-  <!-- 周切换行 -->
-  <view class="week-bar" wx:if="{{period==='week'}}">
-    <scroll-view scroll-x class="wscroll">
-      <block wx:for="{{weekLabels}}" wx:key="*this">
-        <text class="witem {{index===activeWeekIdx?'active':''}}" bindtap="pickWeek" data-idx="{{index}}">{{item}}</text>
-      </block>
-      <text class="witem-nav">上周</text>
+  <view class="section-card" wx:if="{{period==='week'}}">
+    <view class="section-head">
+      <text class="section-title">周视图</text>
+      <text class="section-subtitle">点击切换周次</text>
+    </view>
+    <scroll-view scroll-x class="week-scroll">
+      <view class="week-list">
+        <block wx:for="{{weekLabels}}" wx:key="*this">
+          <text class="week-item {{index===activeWeekIdx?'active':''}}" bindtap="pickWeek" data-idx="{{index}}">{{item}}</text>
+        </block>
+      </view>
     </scroll-view>
   </view>
 
-  <!-- 统计摘要 -->
-  <view class="summary">
-    <view class="sum-item">
-      <text class="sum-lbl">总支出：</text>
-      <text class="sum-val">{{totalExpense || '0.00'}}</text>
+  <view class="section-card">
+    <view class="section-head">
+      <text class="section-title">趋势图</text>
+      <text class="section-subtitle">近 7 天支出</text>
     </view>
-    <view class="sum-item">
-      <text class="sum-lbl">平均值：</text>
-      <text class="sub-val">{{avgExpense || '0.00'}}</text>
-      <text class="total-right">{{rightTotal || '0.00'}}</text>
+    <view class="trend-chart">
+      <block wx:for="{{trendList}}" wx:key="label">
+        <view class="trend-col">
+          <view class="trend-bar-wrap">
+            <view class="trend-bar" style="height: {{item.value * 2}}rpx;"></view>
+          </view>
+          <text class="trend-value">{{item.value}}</text>
+          <text class="trend-label">{{item.label}}</text>
+        </view>
+      </block>
     </view>
   </view>
 
-  <!-- 折线图区域 -->
-  <view class="chart-area">
-    <!-- 简易折线图（用canvas或模拟） -->
-    <view class="chart-placeholder" wx:if="{{!hasChart}}">
-      <text style="color:#CCC;font-size:26rpx;">折线图区域</text>
+  <view class="section-card">
+    <view class="section-head">
+      <text class="section-title">支出排行</text>
+      <text class="section-subtitle">按分类汇总</text>
     </view>
-    <!-- 实际使用时可用 canvas 绑定绘制 -->
-    <canvas type="2d" id="lineChart" canvas-id="lineChart" class="chart-canvas"></canvas>
-  </view>
-
-  <!-- 支出排行榜 -->
-  <view class="rank-section">
-    <text class="rank-title">支出排行榜</text>
     <view class="rank-list">
       <block wx:for="{{rankList}}" wx:key="name">
         <view class="rank-item">
-          <view class="ri-left">
-            <view class="icon-circle icon-circle-yellow"><text>{{item.icon}}</text></view>
-            <text class="ri-name">{{item.name}}<text class="ri-pct">{{item.pct}}</text></text>
+          <view class="rank-left">
+            <view class="rank-icon"><text>{{item.icon}}</text></view>
+            <view class="rank-namebox">
+              <text class="rank-name">{{item.name}}</text>
+              <text class="rank-pct">{{item.pct}}</text>
+            </view>
           </view>
-          <view class="ri-mid">
-            <view class="progress-bar"><view class="progress-fill" style="width:{{item.barWidth}}%"></view></view>
+          <view class="rank-mid">
+            <view class="progress-track">
+              <view class="progress-fill" style="width:{{item.barWidth}}%"></view>
+            </view>
           </view>
-          <text class="ri-amt">{{item.amount}}</text>
+          <text class="rank-amt">¥{{item.amount}}</text>
         </view>
       </block>
-      <view wx:if="{{rankList.length===0}}" style="padding:60rpx;text-align:center;color:#999;">
-        暂无数据
-      </view>
+      <view wx:if="{{rankList.length===0}}" class="empty-state">暂无数据</view>
     </view>
   </view>
 
-  <view style="height:200rpx;"></view><!-- 底部留白 -->
+  <view class="section-card">
+    <view class="section-head">
+      <text class="section-title">最近记账</text>
+      <text class="section-subtitle">快速查看最新流水</text>
+    </view>
+    <view class="recent-list">
+      <block wx:for="{{recentList}}" wx:key="time">
+        <view class="recent-item">
+          <view class="recent-icon">{{item.icon}}</view>
+          <view class="recent-body">
+            <text class="recent-title">{{item.title}}</text>
+            <text class="recent-subtitle">{{item.category}} · {{item.time}}</text>
+          </view>
+          <text class="recent-amt">{{item.amount}}</text>
+        </view>
+      </block>
+    </view>
+  </view>
 
-  <!-- 浮动+按钮 -->
-  <view class="fab" style="bottom:170rpx;left:50%;margin-left:-56rpx;" bindtap="addRecord">
+  <view class="bottom-spacer"></view>
+
+  <view class="fab" bindtap="addRecord">
     <text class="fab-icon">+</text>
   </view>
 </view>

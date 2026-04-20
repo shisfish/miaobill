@@ -1,122 +1,267 @@
-/* ========== 记账页 ========== */
+page {
+  background: #f3f5f8;
+}
+
 .container {
-  background-color: #FFFFFF;
   min-height: 100vh;
-  display: flex; flex-direction: column;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(180deg, #fff7df 0%, #f3f5f8 22%, #f3f5f8 100%);
+  box-sizing: border-box;
 }
-.container.no-scroll { overflow: hidden; height: 100vh; }
 
-/* ---- 顶栏 ---- */
+.container.no-scroll {
+  overflow: hidden;
+  height: 100vh;
+}
+
 .top-bar {
-  background-color: #FFD54F;
-  padding: 20rpx 32rpx;
-  display: flex; justify-content: space-between; align-items: center;
-  flex-shrink: 0;
+  margin: 24rpx 24rpx 0;
+  padding: 24rpx 28rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 28rpx;
+  background: linear-gradient(135deg, #ffcf4a 0%, #ffe7a7 100%);
+  box-shadow: 0 14rpx 40rpx rgba(34, 40, 49, 0.08);
 }
-.tab-switch { display: flex; gap: 48rpx; }
-.tab-item { font-size: 34rpx; font-weight: 600; color: rgba(0,0,0,0.45); position: relative; }
-.tab-item.active { color: #222222; }
+
+.tab-switch {
+  display: flex;
+  gap: 18rpx;
+}
+
+.tab-item {
+  position: relative;
+  padding: 14rpx 24rpx;
+  border-radius: 999rpx;
+  font-size: 30rpx;
+  font-weight: 700;
+  color: rgba(31, 31, 31, 0.6);
+  background: rgba(255, 255, 255, 0.28);
+}
+
+.tab-item.active {
+  color: #1f1f1f;
+  background: rgba(255, 255, 255, 0.72);
+}
+
 .tab-item.active::after {
-  content:''; position:absolute; bottom:-8rpx; left:50%; transform:translateX(-50%);
-  width:36rpx; height:4rpx; border-radius:2rpx; background:#222222;
+  display: none;
 }
-.cancel-btn { font-size:28rpx; color:rgba(0,0,0,0.55); }
 
-/* ---- 分类网格 ---- */
-.cat-scroll { flex:1; overflow-y:auto; }
-.cat-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:24rpx 12rpx; padding:40rpx 24rpx; }
-.cat-item { display:flex; flex-direction:column; align-items:center; }
-.cat-icon-wrap { width:96rpx; height:96rpx; border-radius:50%; background:#F5F5F5; display:flex; align-items:center; justify-content:center; margin-bottom:14rpx; transition:.15s; }
-.cat-icon-wrap.sel { background:#FFD54F; }
-.cat-icon-text { font-size:44rpx; }
-.cat-name { font-size:24rpx; color:#666666; }
-.cat-icon-wrap.sel + .cat-name { color:#222222; font-weight:600; }
+.cancel-btn {
+  font-size: 28rpx;
+  color: rgba(31, 31, 31, 0.72);
+  font-weight: 600;
+}
 
-/* ==================== 键盘弹层 ==================== */
+.cat-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24rpx;
+}
+
+.cat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20rpx 14rpx;
+  padding: 24rpx;
+  border-radius: 28rpx;
+  background: #ffffff;
+  box-shadow: 0 14rpx 40rpx rgba(34, 40, 49, 0.08);
+}
+
+.cat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.cat-icon-wrap {
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: 28rpx;
+  background: #f4f6f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: .15s;
+}
+
+.cat-icon-wrap.sel {
+  background: linear-gradient(135deg, #ffcf4a 0%, #ffe7a7 100%);
+}
+
+.cat-icon-text {
+  font-size: 44rpx;
+}
+
+.cat-name {
+  font-size: 24rpx;
+  color: #667085;
+}
+
+.cat-icon-wrap.sel + .cat-name {
+  color: #1f1f1f;
+  font-weight: 700;
+}
+
 .kb-overlay {
-  position:fixed; top:0; left:0; right:0; bottom:0;
-  background:rgba(0,0,0,0.4); z-index:9999;
-  visibility:hidden; opacity:0;
-  transition:opacity .2s, visibility .2s;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(15, 23, 42, 0.42);
+  z-index: 9999;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity .2s, visibility .2s;
 }
-.kb-overlay.show { visibility:visible; opacity:1; }
+
+.kb-overlay.show {
+  visibility: visible;
+  opacity: 1;
+}
 
 .kb-panel {
-  position:absolute; left:0; right:0; bottom:0;
-  background:#FFFFFF; border-radius:28rpx 28rpx 0 0;
-  transform:translateY(100%);
-  transition:transform .3s cubic-bezier(.32,.72,0,1);
-  box-shadow:0 -4rpx 40rpx rgba(0,0,0,0.08);
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #ffffff;
+  border-radius: 28rpx 28rpx 0 0;
+  transform: translateY(100%);
+  transition: transform .3s cubic-bezier(.32,.72,0,1);
+  box-shadow: 0 -4rpx 40rpx rgba(0, 0, 0, 0.08);
 }
-.kb-overlay.show .kb-panel { transform:translateY(0); }
 
-/* --- 金额行 --- */
+.kb-overlay.show .kb-panel {
+  transform: translateY(0);
+}
+
 .kb-amount-row {
-  text-align:right; padding:24rpx 36rpx 8rpx;
+  text-align: right;
+  padding: 28rpx 32rpx 12rpx;
 }
-.amt-val-big { font-size:56rpx; font-weight:700; color:#222222; }
 
-/* --- 备注行 --- */
+.amt-val-big {
+  font-size: 60rpx;
+  font-weight: 800;
+  color: #1f1f1f;
+}
+
 .kb-header {
-  padding: 16rpx 20rpx;
+  padding: 8rpx 20rpx 18rpx;
 }
+
 .remark-box {
-  display: flex; align-items: center;
-  background:#F5F6F8; border-radius:12rpx;
-  padding: 0 24rpx; height:76rpx;
+  display: flex;
+  align-items: center;
+  background: #f4f6f9;
+  border-radius: 20rpx;
+  padding: 0 24rpx;
+  height: 76rpx;
 }
+
 .remark-label {
-  font-size:28rpx; color:#222222; font-weight: 500;
+  font-size: 28rpx;
+  color: #1f1f1f;
+  font-weight: 600;
   margin-right: 12rpx;
-  display: flex; align-items: center;
+  display: flex;
+  align-items: center;
 }
+
 .remark-input {
-  flex: 1; font-size:28rpx; color:#333333;
-  border:none; height:100%;
-  display: flex; align-items: center;
+  flex: 1;
+  font-size: 28rpx;
+  color: #1f1f1f;
+  border: none;
+  height: 100%;
+  display: flex;
+  align-items: center;
 }
-.remark-placeholder { color:#999999; font-size:28rpx; height: 100%; display: flex; align-items: center; }
+
+.remark-placeholder {
+  color: #98a2b3;
+  font-size: 28rpx;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
 
 .date-btn {
   flex-direction: row !important;
   gap: 8rpx !important;
-  background: #FFFFFF !important;
+  background: #ffffff !important;
 }
-.date-btn .date-icon { font-size:32rpx; }
-.date-btn text:last-child { font-size:26rpx; color:#222222; }
 
-/* ---- 数字键盘 ---- */
-.kb {
-  padding: 0 0 0 0;
-  background:#FFFFFF;
+.date-btn .date-icon {
+  font-size: 32rpx;
 }
-.kb-row { display:flex; margin-bottom:0; border-top: 1rpx solid #F2F2F2; }
-.kb-row:last-child { border-bottom: 1rpx solid #F2F2F2; }
+
+.date-btn text:last-child {
+  font-size: 26rpx;
+  color: #1f1f1f;
+  font-weight: 600;
+}
+
+.kb {
+  background: #ffffff;
+}
+
+.kb-row {
+  display: flex;
+  margin-bottom: 0;
+  border-top: 1rpx solid #eef1f5;
+}
+
+.kb-row:last-child {
+  border-bottom: 1rpx solid #eef1f5;
+}
 
 .k {
-  flex:1; height:110rpx;
-  display:flex; align-items:center; justify-content:center;
-  background:#FFFFFF; border-radius:0;
-  font-size:46rpx; font-weight:400; color:#222222;
-  transition:background .06s;
-  border-right: 1rpx solid #F2F2F2;
+  flex: 1;
+  height: 110rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  border-radius: 0;
+  font-size: 46rpx;
+  font-weight: 500;
+  color: #1f1f1f;
+  transition: background .06s;
+  border-right: 1rpx solid #eef1f5;
 }
-.k:last-child { border-right: none; }
-.k:active { background:#F8F8F8; }
 
-/* 删除键（退格）*/
-.k-action {
-  background:#FFFFFF !important;
+.k:last-child {
+  border-right: none;
 }
+
+.k:active {
+  background: #f8fafc;
+}
+
+.k-action {
+  background: #ffffff !important;
+}
+
 .backspace-icon {
-  width: 52rpx; height: 36rpx;
+  width: 52rpx;
+  height: 36rpx;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z'/%3E%3Cline x1='18' y1='9' x2='12' y2='15'/%3E%3Cline x1='12' y1='9' x2='18' y2='15'/%3E%3C/svg%3E");
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
 }
 
-/* 完成按钮 */
 .k-ok {
-  background:#FFD54F !important; color:#222222; font-weight:500; font-size:36rpx;
+  background: linear-gradient(135deg, #ffcf4a 0%, #ffe7a7 100%) !important;
+  color: #1f1f1f;
+  font-weight: 800;
+  font-size: 36rpx;
 }

@@ -3,7 +3,6 @@
   <view class="top-bar">
     <view class="tab-switch">
       <text class="tab-item {{type===2?'active':''}}" bindtap="switchType" data-type="2">支出</text>
-      <text class="tab-item {{type===1?'active':''}}" bindtap="switchType" data-type="1">收入</text>
     </view>
     <text class="cancel-btn" bindtap="goBack">取消</text>
   </view>

@@ -1,5 +1,4 @@
 <view class="container">
-  <!-- 黄色顶栏 -->
   <view class="header">
     <view class="header-content">
       <view class="month-block">
@@ -13,10 +12,6 @@
       <view class="header-divider"></view>
       <view class="stats-block">
         <view class="stat-item">
-          <text class="stat-lbl">收入</text>
-          <text class="stat-val">{{monthIncome || '0.00'}}</text>
-        </view>
-        <view class="stat-item">
           <text class="stat-lbl">支出</text>
           <text class="stat-val large">{{monthExpense || '0.00'}}</text>
         </view>
@@ -24,19 +19,16 @@
     </view>
   </view>
 
-  <!-- 记录列表 -->
   <scroll-view scroll-y style="flex:1;">
     <block wx:for="{{groupedRecords}}" wx:key="date">
-      <!-- 日期头部 -->
       <view class="date-header">
         <text class="date-text">{{item.dateText}}</text>
         <text class="date-total">支出: {{item.dayExpense}}</text>
       </view>
 
-      <!-- 当日记录 -->
       <view wx:for="{{item.records}}" wx:for-item="record" wx:key="id" class="record-item" bindtap="viewRecord" data-id="{{record.id}}">
         <view class="icon-circle icon-circle-yellow">
-          <text>{{getCategoryIcon(record.category)}}</text>
+          <text>{{record.categoryIcon}}</text>
         </view>
         <text class="record-cat">{{record.category}}</text>
         <text class="record-amt">{{record.amount}}</text>
@@ -49,15 +41,13 @@
       <text class="desc">点击下方「+」开始记账吧</text>
     </view>
 
-    <view style="height:180rpx;"></view><!-- 底部留白给tab和fab -->
+    <view style="height:180rpx;"></view>
   </scroll-view>
 
-  <!-- 浮动+按钮 -->
   <view class="fab" style="bottom:170rpx;left:50%;margin-left:-56rpx;" bindtap="addRecord">
     <text class="fab-icon">+</text>
   </view>
 
-  <!-- 月份选择弹窗 -->
   <view wx:if="{{showMonthPicker}}" class="mask" bindtap="hideMonthPicker">
     <view class="picker-panel" catchtap="stopPropagation">
       <view class="picker-head">

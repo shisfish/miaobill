@@ -1,11 +1,11 @@
+const { getCategoryIcon } = require('../../utils/categories');
+
 Page({
   data: {
     timeFilter: 'all',
     filteredRecords: [],
     groupedRecords: [],
-    monthIncome: '0.00',
     monthExpense: '0.00',
-    monthBalance: 0,
     currentYear: 2026,
     currentMonth: 4,
     showMonthPicker: false,
@@ -55,9 +55,7 @@ Page({
     this.setData({
       filteredRecords: filteredRecords,
       groupedRecords: groupedRecords,
-      monthIncome: monthStats.income,
-      monthExpense: monthStats.expense,
-      monthBalance: monthStats.balance
+      monthExpense: monthStats.expense
     });
   },
   
@@ -138,24 +136,17 @@ Page({
   },
   
   calculateMonthStats: function(records, year, month) {
-    let income = 0;
     let expense = 0;
 
     records.forEach(record => {
       const recordDate = new Date(record.date);
       if (recordDate.getFullYear() === year && recordDate.getMonth() + 1 === month) {
-        if (record.type === 1) {
-          income += parseFloat(record.amount);
-        } else {
-          expense += parseFloat(record.amount);
-        }
+        expense += parseFloat(record.amount);
       }
     });
 
     return {
-      income: income.toFixed(2),
-      expense: expense.toFixed(2),
-      balance: (income - expense).toFixed(2)
+      expense: expense.toFixed(2)
     };
   },
 
@@ -200,25 +191,9 @@ Page({
     });
   },
 
-  // 阻止冒泡
-  stopPropagation: function() {
-    // 什么都不做，只是阻止事件冒泡
-  },
-  
-  getCategoryIcon: function(category) {
-    const icons = {
-      '餐饮': '🍴',   '交通': '🚌',  '购物': '🛍',
-      '娱乐': '🎤',   '医疗': '💊',  '教育': '📖',
-      '居住': '🏠',   '通讯': '📞',  '日用': '🧻',
-      '彩票': '🎫',   '水电': '⚡',  '亲友': '👨‍👩‍👧',
-      '汽车': '🚗',   '工资': '💰',  '奖金': '🧧',
-      '投资': '📈',   '兼职': '💻',  '其他': '📦'
-    };
-    return icons[category] || '📦';
-  },
-  
-  viewRecord: function(e) {
-    const id = e.currentTarget.dataset.id;
+  stopPropagation: function() {},
+
+  viewRecord: function() {
     wx.showToast({
       title: '查看详情功能开发中',
       icon: 'none'
