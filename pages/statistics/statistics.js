@@ -9,7 +9,7 @@ Page({
     showMonthPicker: false,
     years: (function() {
       const now = new Date();
-      const startYear = 2015;
+      const startYear = 2018;
       const endYear = now.getFullYear() + 1;
       const arr = [];
       for (let y = startYear; y <= endYear; y++) arr.push(y);
