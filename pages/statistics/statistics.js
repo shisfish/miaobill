@@ -45,22 +45,39 @@ Page({
   },
   
   loadRecords: function() {
-    const records = wx.getStorageSync('records') || [];
     const { currentYear, currentMonth } = this.data;
 
-    // 筛选当前年月的数据
-    const filteredRecords = records.filter(r => {
-      const date = new Date(r.date);
-      return date.getFullYear() === currentYear && date.getMonth() + 1 === currentMonth;
-    }).sort((a, b) => new Date(b.date) - new Date(a.date));
+    // 调用后端 API 获取当月记录
+    wx.request({
+      url: `http://localhost:8080/api/records/month/${currentYear}/${currentMonth}`,
+      method: 'GET',
+      success: (res) => {
+        const records = res.data || [];
+        
+        // 转换后端数据格式以适应前端需求
+        const filteredRecords = records.map(record => ({
+          id: record.id,
+          date: record.createTime.substring(0, 10),
+          time: record.createTime.substring(11, 16),
+          category: record.category,
+          amount: record.amount.toFixed(2),
+          type: record.type === 'expense' ? 2 : 1,
+          remark: record.description
+        })).sort((a, b) => new Date(b.date) - new Date(a.date));
 
-    const groupedRecords = this.groupRecordsByDate(filteredRecords);
-    const monthStats = this.calculateMonthStats(records, currentYear, currentMonth);
+        const groupedRecords = this.groupRecordsByDate(filteredRecords);
+        const monthStats = this.calculateMonthStats(filteredRecords, currentYear, currentMonth);
 
-    this.setData({
-      filteredRecords: filteredRecords,
-      groupedRecords: groupedRecords,
-      monthExpense: monthStats.expense
+        this.setData({
+          filteredRecords: filteredRecords,
+          groupedRecords: groupedRecords,
+          monthExpense: monthStats.expense
+        });
+      },
+      fail: (err) => {
+        console.error('获取记录失败:', err);
+        wx.showToast({ title: '获取数据失败', icon: 'none' });
+      }
     });
   },
   

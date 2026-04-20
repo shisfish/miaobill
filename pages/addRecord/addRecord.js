@@ -138,24 +138,29 @@ Page({
     }
 
     const record = {
-      id: Date.now(),
-      type: this.data.type,
-      amount: finalAmt.toFixed(2),
+      type: this.data.type === 2 ? 'expense' : 'income',
+      amount: finalAmt,
       category: this.data.selectedCategory,
-      remark: this.data.remark,
-      date: this.data.date,
-      time: new Date().toTimeString().slice(0,5)
+      description: this.data.remark,
+      createTime: new Date()
     };
 
-    const records = wx.getStorageSync('records') || [];
-    records.unshift(record);
-    wx.setStorageSync('records', records);
-
-    wx.showToast({ title: '已保存', icon: 'success' });
-
-    setTimeout(() => {
-      this.setData({ amount: '', remark: '', keyboardVisible: false });
-      wx.switchTab({ url: '/pages/statistics/statistics' });
-    }, 1200);
+    // 调用后端 API 保存记录
+    wx.request({
+      url: 'http://localhost:8080/api/records',
+      method: 'POST',
+      data: record,
+      success: (res) => {
+        wx.showToast({ title: '已保存', icon: 'success' });
+        setTimeout(() => {
+          this.setData({ amount: '', remark: '', keyboardVisible: false });
+          wx.switchTab({ url: '/pages/statistics/statistics' });
+        }, 1200);
+      },
+      fail: (err) => {
+        wx.showToast({ title: '保存失败', icon: 'none' });
+        console.error('保存记录失败:', err);
+      }
+    });
   }
 });

@@ -57,67 +57,87 @@ Page({
   },
 
   loadData() {
-    const records = wx.getStorageSync('records') || [];
-    const expenseRecords = records.filter(r => r.type === 2);
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const currentMonth = now.getMonth() + 1;
 
-    if (!expenseRecords.length) {
-      this.setData({
-        hasRealData: false,
-        totalExpense: this.data.mockSummary.totalExpense,
-        avgExpense: this.data.mockSummary.avgExpense,
-        rightTotal: this.data.mockSummary.rightTotal,
-        trendList: this.data.mockTrendList,
-        rankList: this.data.mockRankList,
-        recentList: this.data.mockRecentList
-      });
-      return;
-    }
+    // 调用后端 API 获取当月分类统计数据
+    wx.request({
+      url: `http://localhost:8080/api/records/stats/category/${currentYear}/${currentMonth}`,
+      method: 'GET',
+      success: (res) => {
+        const stats = res.data || {};
+        const categoryMap = stats.categoryMap || {};
+        const total = stats.totalExpense || 0;
 
-    const categoryMap = {};
-    let total = 0;
+        if (Object.keys(categoryMap).length === 0) {
+          this.setData({
+            hasRealData: false,
+            totalExpense: this.data.mockSummary.totalExpense,
+            avgExpense: this.data.mockSummary.avgExpense,
+            rightTotal: this.data.mockSummary.rightTotal,
+            trendList: this.data.mockTrendList,
+            rankList: this.data.mockRankList,
+            recentList: this.data.mockRecentList
+          });
+          return;
+        }
 
-    expenseRecords.forEach(record => {
-      const amount = Number(record.amount) || 0;
-      total += amount;
-      categoryMap[record.category] = (categoryMap[record.category] || 0) + amount;
+        const rankList = Object.keys(categoryMap)
+          .map(name => ({
+            name,
+            icon: getCategoryIcon(name),
+            amount: categoryMap[name].toFixed(1),
+            pct: total ? ((categoryMap[name] / total) * 100).toFixed(1) + '%' : '0.0%',
+            barWidth: total ? Math.max(Math.round((categoryMap[name] / total) * 100), 3) : 3
+          }))
+          .sort((a, b) => Number(b.amount) - Number(a.amount));
+
+        // 调用后端 API 获取最近记录
+        wx.request({
+          url: 'http://localhost:8080/api/records',
+          method: 'GET',
+          success: (res) => {
+            const records = res.data || [];
+            const expenseRecords = records.filter(r => r.type === 'expense');
+            
+            const recentList = expenseRecords
+              .slice()
+              .reverse()
+              .slice(0, 4)
+              .map(item => ({
+                title: item.description || item.category || '记账',
+                category: item.category || '其他',
+                time: item.createTime ? item.createTime.substring(0, 10) : '刚刚',
+                amount: `-${Number(item.amount || 0).toFixed(2)}`,
+                icon: getCategoryIcon(item.category)
+              }));
+
+            const trendList = this.buildTrendList(expenseRecords);
+            const latestBalance = 0; // 这里可以从后端获取余额数据
+
+            this.setData({
+              hasRealData: true,
+              totalExpense: total.toFixed(2),
+              avgExpense: expenseRecords.length > 0 ? (total / expenseRecords.length).toFixed(2) : '0.00',
+              rightTotal: latestBalance.toFixed(2),
+              trendList,
+              rankList,
+              recentList
+            });
+
+            setTimeout(() => this.drawChart(trendList), 150);
+          },
+          fail: (err) => {
+            console.error('获取最近记录失败:', err);
+          }
+        });
+      },
+      fail: (err) => {
+        console.error('获取分类统计失败:', err);
+        wx.showToast({ title: '获取数据失败', icon: 'none' });
+      }
     });
-
-    const rankList = Object.keys(categoryMap)
-      .map(name => ({
-        name,
-        icon: getCategoryIcon(name),
-        amount: categoryMap[name].toFixed(1),
-        pct: total ? ((categoryMap[name] / total) * 100).toFixed(1) + '%' : '0.0%',
-        barWidth: total ? Math.max(Math.round((categoryMap[name] / total) * 100), 3) : 3
-      }))
-      .sort((a, b) => Number(b.amount) - Number(a.amount));
-
-    const recentList = expenseRecords
-      .slice()
-      .reverse()
-      .slice(0, 4)
-      .map(item => ({
-        title: item.title || item.category || '记账',
-        category: item.category || '其他',
-        time: item.date || '刚刚',
-        amount: `-${Number(item.amount || 0).toFixed(2)}`,
-        icon: item.categoryIcon || getCategoryIcon(item.category)
-      }));
-
-    const trendList = this.buildTrendList(expenseRecords);
-    const latestBalance = Number(wx.getStorageSync('balance') || 0);
-
-    this.setData({
-      hasRealData: true,
-      totalExpense: total.toFixed(2),
-      avgExpense: (total / expenseRecords.length).toFixed(2),
-      rightTotal: latestBalance.toFixed(2),
-      trendList,
-      rankList,
-      recentList
-    });
-
-    setTimeout(() => this.drawChart(trendList), 150);
   },
 
   buildTrendList(records) {
