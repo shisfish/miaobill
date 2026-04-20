@@ -18,13 +18,13 @@ Page({
       rightTotal: '1820.60'
     },
     mockTrendList: [
-      { label: '周一', value: 32 },
-      { label: '周二', value: 48 },
-      { label: '周三', value: 39 },
-      { label: '周四', value: 76 },
-      { label: '周五', value: 58 },
-      { label: '周六', value: 92 },
-      { label: '周日', value: 66 }
+      { label: '周一', value: 32, heightPercent: 35 },
+      { label: '周二', value: 48, heightPercent: 52 },
+      { label: '周三', value: 39, heightPercent: 42 },
+      { label: '周四', value: 76, heightPercent: 83 },
+      { label: '周五', value: 58, heightPercent: 63 },
+      { label: '周六', value: 92, heightPercent: 100 },
+      { label: '周日', value: 66, heightPercent: 72 }
     ],
     mockRankList: [
       { name: '日用', icon: '🧻', pct: '31.7%', amount: '666.9', barWidth: 100 },
@@ -135,7 +135,13 @@ Page({
       list[index].value = Number(record.amount) || 0;
     });
 
-    return list;
+    const max = Math.max(...list.map(item => item.value), 1);
+
+    return list.map(item => ({
+      label: item.label,
+      value: item.value,
+      heightPercent: Math.round((item.value / max) * 100)
+    }));
   },
 
   drawChart(data) {

@@ -1,5 +1,3 @@
-const { getCategoryIcon } = require('../../utils/categories');
-
 Page({
   data: {
     timeFilter: 'all',
@@ -191,9 +189,24 @@ Page({
     });
   },
 
-  stopPropagation: function() {},
-
-  viewRecord: function() {
+  // 阻止冒泡
+  stopPropagation: function() {
+    // 什么都不做，只是阻止事件冒泡
+  },
+  
+  getCategoryIcon: function(category) {
+    const icons = {
+      '餐饮': '🍴',   '交通': '🚌',  '购物': '🛍',
+      '娱乐': '🎤',   '医疗': '💊',  '教育': '📖',
+      '居住': '🏠',   '通讯': '📞',  '日用': '🧻',
+      '彩票': '🎫',   '水电': '⚡',  '亲友': '👨‍👩‍👧',
+      '汽车': '🚗',   '其他': '📦'
+    };
+    return icons[category] || '📦';
+  },
+  
+  viewRecord: function(e) {
+    const id = e.currentTarget.dataset.id;
     wx.showToast({
       title: '查看详情功能开发中',
       icon: 'none'

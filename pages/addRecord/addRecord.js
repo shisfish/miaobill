@@ -1,5 +1,3 @@
-const { expenseCategories, getCategoryIcon } = require('../../utils/categories');
-
 Page({
   data: {
     type: 2,
@@ -9,7 +7,38 @@ Page({
     date: '',
     categories: [],
     keyboardVisible: false,
-    expenseCategories
+    
+    expenseCategories: [
+      { name: '餐饮', icon: '🍴' },
+      { name: '购物', icon: '🛍' },
+      { name: '日用', icon: '🧻' },
+      { name: '交通', icon: '🚌' },
+      { name: '蔬菜', icon: '🥕' },
+      { name: '水果', icon: '🍎' },
+      { name: '零食', icon: '🍰' },
+      { name: '运动', icon: '🚴' },
+      { name: '娱乐', icon: '🎤' },
+      { name: '通讯', icon: '📞' },
+      { name: '服饰', icon: '👕' },
+      { name: '美容', icon: '💄' },
+      { name: '住房', icon: '🏠' },
+      { name: '居家', icon: '🛋' },
+      { name: '孩子', icon: '👶' },
+      { name: '长辈', icon: '👴' },
+      { name: '社交', icon: '💬' },
+      { name: '旅行', icon: '✈️' },
+      { name: '烟酒', icon: '🍺' },
+      { name: '数码', icon: '📱' },
+      { name: '汽车', icon: '🚗' },
+      { name: '医疗', icon: '💊' },
+      { name: '书籍', icon: '📖' },
+      { name: '水电', icon: '⚡' },
+      { name: '保险', icon: '❤' },
+      { name: '学习', icon: '🎓' },
+      { name: '宠物', icon: '🐶' },
+      { name: '礼金', icon: '🧧' },
+      { name: '其他', icon: '📦' }
+    ]
   },
 
   onLoad() {
@@ -21,14 +50,8 @@ Page({
     });
   },
 
-  switchType(e) {
-    const type = parseInt(e.currentTarget.dataset.type);
-    if (type === 1) return;
-    this.setData({
-      type,
-      categories: this.data.expenseCategories,
-      selectedCategory: '餐饮'
-    });
+  showKeyboard() {
+    this.setData({ keyboardVisible: true });
   },
 
   selectCategory(e) {
@@ -38,16 +61,13 @@ Page({
     }
   },
 
-  showKeyboard() {
-    this.setData({ keyboardVisible: true });
-  },
-
   hideKeyboard() {
     this.setData({ keyboardVisible: false });
   },
 
   stopPropagation() {},
 
+  // 新键盘输入
   pressKey(e) {
     if (!this.data.keyboardVisible) {
       this.setData({ keyboardVisible: true });
@@ -92,8 +112,10 @@ Page({
       wx.showToast({ title: '请输入金额', icon: 'none' }); return;
     }
 
+    // 计算金额
     let finalAmt = 0;
     try {
+      // 处理加减法
       const parts = amtStr.split(/([+-])/);
       if (parts.length > 0) {
         finalAmt = parseFloat(parts[0] || 0);
@@ -120,7 +142,6 @@ Page({
       type: this.data.type,
       amount: finalAmt.toFixed(2),
       category: this.data.selectedCategory,
-      categoryIcon: getCategoryIcon(this.data.selectedCategory),
       remark: this.data.remark,
       date: this.data.date,
       time: new Date().toTimeString().slice(0,5)

@@ -80,9 +80,4 @@
   </view>
 
   <view style="height:200rpx;"></view>
-
-  <!-- 浮动+按钮 -->
-  <view class="fab" style="bottom:170rpx;left:50%;margin-left:-56rpx;" bindtap="addRecord">
-    <text class="fab-icon">+</text>
-  </view>
 </view>

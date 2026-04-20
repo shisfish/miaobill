@@ -29,9 +29,9 @@
     </view>
 
     <view class="period-tabs">
-      <text class="period-tab {{period==='week'?'active':''}}" bindtap="switchPeriod" data-p="week">周</text>
-      <text class="period-tab {{period==='month'?'active':''}}" bindtap="switchPeriod" data-p="month">月</text>
-      <text class="period-tab {{period==='year'?'active':''}}" bindtap="switchPeriod" data-p="year">年</text>
+      <view class="period-tab {{period==='week'?'active':''}}" bindtap="switchPeriod" data-p="week">周</view>
+      <view class="period-tab {{period==='month'?'active':''}}" bindtap="switchPeriod" data-p="month">月</view>
+      <view class="period-tab {{period==='year'?'active':''}}" bindtap="switchPeriod" data-p="year">年</view>
     </view>
   </view>
 
@@ -58,7 +58,7 @@
       <block wx:for="{{trendList}}" wx:key="label">
         <view class="trend-col">
           <view class="trend-bar-wrap">
-            <view class="trend-bar" style="height: {{item.value * 2}}rpx;"></view>
+            <view class="trend-bar" style="height: {{item.heightPercent}}%;"></view>
           </view>
           <text class="trend-value">{{item.value}}</text>
           <text class="trend-label">{{item.label}}</text>
@@ -115,7 +115,10 @@
 
   <view class="bottom-spacer"></view>
 
+  <!-- 悬浮记账按钮 -->
   <view class="fab" bindtap="addRecord">
-    <text class="fab-icon">+</text>
+    <view class="fab-circle">
+      <text class="fab-icon">+</text>
+    </view>
   </view>
 </view>

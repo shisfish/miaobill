@@ -38,14 +38,17 @@
     <view wx:if="{{groupedRecords.length === 0}}" class="empty-state">
       <text class="icon">📝</text>
       <text class="title">暂无记录</text>
-      <text class="desc">点击下方「+」开始记账吧</text>
+      <text class="desc">点击下方「记账」开始记账吧</text>
     </view>
 
-    <view style="height:180rpx;"></view>
+    <view style="height:200rpx;"></view>
   </scroll-view>
 
-  <view class="fab" style="bottom:170rpx;left:50%;margin-left:-56rpx;" bindtap="addRecord">
-    <text class="fab-icon">+</text>
+  <!-- 悬浮记账按钮 -->
+  <view class="fab" bindtap="addRecord">
+    <view class="fab-circle">
+      <text class="fab-icon">+</text>
+    </view>
   </view>
 
   <view wx:if="{{showMonthPicker}}" class="mask" bindtap="hideMonthPicker">
