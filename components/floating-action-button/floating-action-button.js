@@ -1,14 +1,17 @@
 Component({
   properties: {
-    bottom: {
+    size: {
+      type: Number,
+      value: 112
+    },
+    color: {
       type: String,
-      value: '72rpx'
+      value: '#FFD54F'
     }
   },
-
   methods: {
-    onTap() {
+    handleTap() {
       this.triggerEvent('tap');
     }
   }
-});
+})

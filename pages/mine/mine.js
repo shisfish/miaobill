@@ -54,5 +54,9 @@ Page({
 
   addRecord() {
     wx.switchTab({ url: '/pages/addRecord/addRecord' });
+  },
+
+  onUnload() {
+    // 清理资源
   }
 });

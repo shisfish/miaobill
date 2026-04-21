@@ -7,6 +7,8 @@ page {
   padding: 24rpx;
   box-sizing: border-box;
   background: linear-gradient(180deg, #fff7df 0%, #f3f5f8 22%, #f3f5f8 100%);
+  display: flex;
+  flex-direction: column;
 }
 
 .hero-card,

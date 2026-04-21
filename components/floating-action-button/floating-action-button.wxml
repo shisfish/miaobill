@@ -1,5 +1,3 @@
-<view class="fab" bindtap="onTap">
-  <view class="fab-circle">
-    <text class="fab-icon">+</text>
-  </view>
+<view class="fab" bindtap="handleTap" style="width: {{size}}rpx; height: {{size}}rpx; background-color: {{color}};">
+  <text class="fab-icon">+</text>
 </view>
