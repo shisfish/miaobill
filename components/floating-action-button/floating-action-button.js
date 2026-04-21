@@ -7,6 +7,10 @@ Component({
     color: {
       type: String,
       value: '#FFD54F'
+    },
+    hidden: {
+      type: Boolean,
+      value: false
     }
   },
   methods: {

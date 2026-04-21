@@ -2,11 +2,15 @@
   <!-- 黄色用户区 -->
   <view class="user-header">
     <view class="user-row">
-      <image class="avatar-img" src="/assets/avatar.png" mode="aspectFill" wx:if="{{avatarUrl}}"></image>
-      <view class="avatar-circle wx:else">
-        <text class="avatar-char">{{nickName ? nickName[0] : '用'}}</text>
+      <button class="avatar-wrap" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar" wx:if="{{!isLogin}}">
+        <view class="avatar-circle">
+          <text class="avatar-char">+</text>
+        </view>
+      </button>
+      <view class="avatar-wrap" wx:else>
+        <image class="avatar-img" src="{{avatarUrl}}" mode="aspectFill"></image>
       </view>
-      <text class="nickname">{{nickName || '鱼悦鲸'}}</text>
+      <text class="nickname">{{isLogin ? nickName : '点击登录'}}</text>
       <view class="checkin-btn" bindtap="checkin">
         <text class="ci-icon">📅</text><text>打卡</text>
       </view>
@@ -74,9 +78,9 @@
   <view class="menu-list">
     <view class="mi" bindtap="goFeedback"><text class="mi-icon">✏️</text><text>意见反馈</text><text class="arr">›</text></view>
     <div class="mi-divider"></div>
-    <view class="mi" bindtap="goRate"><text class="mi-icon">👍</text><text>去应用市场给鲨鱼记账评分</text><text class="arr">›</text></view>
+    <view class="mi" bindtap="goRate"><text class="mi-icon">👍</text><text>去应用市场给杪记评分</text><text class="arr">›</text></view>
     <div class="mi-divider"></div>
-    <view class="mi" bindtap="goAbout"><text class="mi-icon">¥</text><text>关于鲨鱼记账 V5.59.0</text><text class="arr">›</text></view>
+    <view class="mi" bindtap="goAbout"><text class="mi-icon">¥</text><text>关于杪记 V1.0.0</text><text class="arr">›</text></view>
   </view>
 
   <view style="height:200rpx;"></view>

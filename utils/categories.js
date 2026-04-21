@@ -30,7 +30,20 @@ const expenseCategories = [
   { name: '其他', icon: '📦' }
 ];
 
-const categoryIconMap = expenseCategories.reduce((map, item) => {
+const incomeCategories = [
+  { name: '工资', icon: '💰' },
+  { name: '奖金', icon: '🏆' },
+  { name: '兼职', icon: '💼' },
+  { name: '理财', icon: '📈' },
+  { name: '礼金', icon: '🧧' },
+  { name: '报销', icon: '🧾' },
+  { name: '退款', icon: '↩️' },
+  { name: '其他', icon: '📦' }
+];
+
+const allCategories = [...expenseCategories, ...incomeCategories];
+
+const categoryIconMap = allCategories.reduce((map, item) => {
   map[item.name] = item.icon;
   return map;
 }, {});
@@ -41,6 +54,8 @@ function getCategoryIcon(name) {
 
 module.exports = {
   expenseCategories,
+  incomeCategories,
+  allCategories,
   categoryIconMap,
   getCategoryIcon
 };

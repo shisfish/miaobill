@@ -1,3 +1,48 @@
+const { createRecord, getCategoriesByType, addCategory, deleteCategory } = require('../../utils/api');
+
+const DEFAULT_EXPENSE = [
+  { name: '餐饮', icon: '🍴' },
+  { name: '购物', icon: '🛍' },
+  { name: '日用', icon: '🧻' },
+  { name: '交通', icon: '🚌' },
+  { name: '蔬菜', icon: '🥕' },
+  { name: '水果', icon: '🍎' },
+  { name: '零食', icon: '🍰' },
+  { name: '运动', icon: '🚴' },
+  { name: '娱乐', icon: '🎤' },
+  { name: '通讯', icon: '📞' },
+  { name: '服饰', icon: '👕' },
+  { name: '美容', icon: '💄' },
+  { name: '住房', icon: '🏠' },
+  { name: '居家', icon: '🛋' },
+  { name: '孩子', icon: '👶' },
+  { name: '长辈', icon: '👴' },
+  { name: '社交', icon: '💬' },
+  { name: '旅行', icon: '✈️' },
+  { name: '烟酒', icon: '🍺' },
+  { name: '数码', icon: '📱' },
+  { name: '汽车', icon: '🚗' },
+  { name: '医疗', icon: '💊' },
+  { name: '书籍', icon: '📖' },
+  { name: '水电', icon: '⚡' },
+  { name: '保险', icon: '❤' },
+  { name: '学习', icon: '🎓' },
+  { name: '宠物', icon: '🐶' },
+  { name: '礼金', icon: '🧧' },
+  { name: '其他', icon: '📦' }
+];
+
+const DEFAULT_INCOME = [
+  { name: '工资', icon: '💰' },
+  { name: '奖金', icon: '🏆' },
+  { name: '兼职', icon: '💼' },
+  { name: '理财', icon: '📈' },
+  { name: '礼金', icon: '🧧' },
+  { name: '报销', icon: '🧾' },
+  { name: '退款', icon: '↩️' },
+  { name: '其他', icon: '📦' }
+];
+
 Page({
   data: {
     type: 2,
@@ -6,48 +51,57 @@ Page({
     remark: '',
     date: '',
     categories: [],
-    keyboardVisible: false,
-    
-    expenseCategories: [
-      { name: '餐饮', icon: '🍴' },
-      { name: '购物', icon: '🛍' },
-      { name: '日用', icon: '🧻' },
-      { name: '交通', icon: '🚌' },
-      { name: '蔬菜', icon: '🥕' },
-      { name: '水果', icon: '🍎' },
-      { name: '零食', icon: '🍰' },
-      { name: '运动', icon: '🚴' },
-      { name: '娱乐', icon: '🎤' },
-      { name: '通讯', icon: '📞' },
-      { name: '服饰', icon: '👕' },
-      { name: '美容', icon: '💄' },
-      { name: '住房', icon: '🏠' },
-      { name: '居家', icon: '🛋' },
-      { name: '孩子', icon: '👶' },
-      { name: '长辈', icon: '👴' },
-      { name: '社交', icon: '💬' },
-      { name: '旅行', icon: '✈️' },
-      { name: '烟酒', icon: '🍺' },
-      { name: '数码', icon: '📱' },
-      { name: '汽车', icon: '🚗' },
-      { name: '医疗', icon: '💊' },
-      { name: '书籍', icon: '📖' },
-      { name: '水电', icon: '⚡' },
-      { name: '保险', icon: '❤' },
-      { name: '学习', icon: '🎓' },
-      { name: '宠物', icon: '🐶' },
-      { name: '礼金', icon: '🧧' },
-      { name: '其他', icon: '📦' }
-    ]
+    keyboardVisible: false
   },
 
   onLoad() {
     const now = new Date();
     this.setData({
-      date: `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`,
-      categories: this.data.expenseCategories,
-      selectedCategory: '餐饮'
+      date: `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`
     });
+    this.loadCategories();
+  },
+
+  loadCategories() {
+    const type = this.data.type === 2 ? 'expense' : 'income';
+
+    getCategoriesByType(type)
+      .then(res => {
+        if (res && res.length > 0) {
+          this.setData({
+            categories: res,
+            selectedCategory: res[0].name
+          });
+        } else {
+          this.initDefaultCategories(type);
+        }
+      })
+      .catch(() => {
+        this.initDefaultCategories(type);
+      });
+  },
+
+  initDefaultCategories(type) {
+    const defaults = type === 'expense' ? DEFAULT_EXPENSE : DEFAULT_INCOME;
+    this.setData({
+      categories: defaults,
+      selectedCategory: defaults[0].name
+    });
+    defaults.forEach((cat, idx) => {
+      addCategory({
+        name: cat.name,
+        icon: cat.icon,
+        type: type,
+        sortOrder: idx + 1,
+        isDefault: 1
+      }).catch(() => {});
+    });
+  },
+
+  switchType(e) {
+    const type = parseInt(e.currentTarget.dataset.type);
+    this.setData({ type, selectedCategory: '' });
+    this.loadCategories();
   },
 
   showKeyboard() {
@@ -112,10 +166,8 @@ Page({
       wx.showToast({ title: '请输入金额', icon: 'none' }); return;
     }
 
-    // 计算金额
     let finalAmt = 0;
     try {
-      // 处理加减法
       const parts = amtStr.split(/([+-])/);
       if (parts.length > 0) {
         finalAmt = parseFloat(parts[0] || 0);
@@ -138,25 +190,34 @@ Page({
     }
 
     const record = {
-      id: Date.now(),
-      type: this.data.type,
+      type: this.data.type === 2 ? 'expense' : 'income',
       amount: finalAmt.toFixed(2),
       category: this.data.selectedCategory,
-      remark: this.data.remark,
+      description: this.data.remark,
       date: this.data.date,
-      time: new Date().toTimeString().slice(0,5)
+      createTime: new Date().toISOString().replace('T', ' ').substring(0, 19)
     };
 
-    const records = wx.getStorageSync('records') || [];
-    records.unshift(record);
-    wx.setStorageSync('records', records);
-
-    wx.showToast({ title: '已保存', icon: 'success' });
-
-    setTimeout(() => {
-      this.setData({ amount: '', remark: '', keyboardVisible: false });
-      wx.switchTab({ url: '/pages/statistics/statistics' });
-    }, 1200);
+    createRecord(record)
+      .then(() => {
+        wx.showToast({ title: '已保存', icon: 'success' });
+        setTimeout(() => {
+          this.setData({ amount: '', remark: '', keyboardVisible: false });
+          wx.switchTab({
+            url: '/pages/statistics/statistics',
+            success: () => {
+              const pages = getCurrentPages();
+              const targetPage = pages[pages.length - 1];
+              if (targetPage && targetPage.loadRecords) {
+                targetPage.loadRecords();
+              }
+            }
+          });
+        }, 1200);
+      })
+      .catch(err => {
+        console.error('保存记录失败:', err);
+      });
   },
 
   onUnload() {

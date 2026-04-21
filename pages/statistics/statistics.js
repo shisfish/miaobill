@@ -1,3 +1,6 @@
+const { getRecordsByMonth } = require('../../utils/api');
+const { getCategoryIcon } = require('../../utils/categories');
+
 Page({
   data: {
     timeFilter: 'all',
@@ -21,97 +24,40 @@ Page({
   },
 
   onLoad: function () {
-    this.initTestData();
     this.loadRecords();
   },
 
   onShow: function() {
     this.loadRecords();
   },
-
-  // 初始化测试数据 - 匹配参考图
-  initTestData: function() {
-    const testRecords = [
-      // 2026年4月12日（星期日）- 匹配参考图
-      { id: 101, date: '2026-04-12', time: '08:30', category: '餐饮',   amount: '20.00',  type: 2, remark: '早餐' },
-      { id: 102, date: '2026-04-12', time: '12:00', category: '餐饮',   amount: '35.00',  type: 2, remark: '午餐' },
-      { id: 103, date: '2026-04-12', time: '18:00', category: '购物',   amount: '588.80', type: 2, remark: '买衣服' },
-
-      // 其他日期凑够 2101.00 支出
-      { id: 201, date: '2026-04-06', time: '09:00', category: '水电',   amount: '1457.20', type: 2, remark: '房租水电' }
-    ];
-
-    wx.setStorageSync('records', testRecords);
-  },
   
   loadRecords: function() {
-    // 暂时使用模拟数据，避免网络请求错误
-    this.initTestData();
-    const records = wx.getStorageSync('records') || [];
     const { currentYear, currentMonth } = this.data;
 
-    // 筛选当前年月的数据
-    const filteredRecords = records.filter(r => {
-      const date = new Date(r.date);
-      return date.getFullYear() === currentYear && date.getMonth() + 1 === currentMonth;
-    }).sort((a, b) => new Date(b.date) - new Date(a.date));
+    getRecordsByMonth(currentYear, currentMonth)
+      .then(records => {
+        const filteredRecords = records.map(record => ({
+          id: record.id,
+          date: record.date,
+          time: record.createTime ? record.createTime.substring(11, 16) : '',
+          category: record.category,
+          amount: parseFloat(record.amount).toFixed(2),
+          type: record.type === 'expense' ? 2 : 1,
+          remark: record.description
+        })).sort((a, b) => new Date(b.date) - new Date(a.date));
 
-    const groupedRecords = this.groupRecordsByDate(filteredRecords);
-    const monthStats = this.calculateMonthStats(records, currentYear, currentMonth);
+        const groupedRecords = this.groupRecordsByDate(filteredRecords);
+        const monthStats = this.calculateMonthStats(filteredRecords, currentYear, currentMonth);
 
-    this.setData({
-      filteredRecords: filteredRecords,
-      groupedRecords: groupedRecords,
-      monthExpense: monthStats.expense
-    });
-    
-    /*
-    const { currentYear, currentMonth } = this.data;
-
-    // 调用后端 API 获取当月记录
-    wx.request({
-      url: `http://localhost:8080/api/records/month/${currentYear}/${currentMonth}`,
-      method: 'GET',
-      header: {
-        'Content-Type': 'application/json'
-      },
-      success: (res) => {
-        if (res.statusCode === 200) {
-          const records = res.data || [];
-          
-          // 转换后端数据格式以适应前端需求
-          const filteredRecords = records.map(record => ({
-            id: record.id,
-            date: record.createTime.substring(0, 10),
-            time: record.createTime.substring(11, 16),
-            category: record.category,
-            amount: record.amount.toFixed(2),
-            type: record.type === 'expense' ? 2 : 1,
-            remark: record.description
-          })).sort((a, b) => new Date(b.date) - new Date(a.date));
-
-          const groupedRecords = this.groupRecordsByDate(filteredRecords);
-          const monthStats = this.calculateMonthStats(filteredRecords, currentYear, currentMonth);
-
-          this.setData({
-            filteredRecords: filteredRecords,
-            groupedRecords: groupedRecords,
-            monthExpense: monthStats.expense
-          });
-        } else {
-          console.error('获取记录失败，状态码:', res.statusCode);
-          this.initTestData();
-          this.loadRecords();
-        }
-      },
-      fail: (err) => {
+        this.setData({
+          filteredRecords: filteredRecords,
+          groupedRecords: groupedRecords,
+          monthExpense: monthStats.expense
+        });
+      })
+      .catch(err => {
         console.error('获取记录失败:', err);
-        wx.showToast({ title: '获取数据失败', icon: 'none' });
-        this.initTestData();
-        this.loadRecords();
-      }
-    });
-    */
+      });
   },
   
   setTimeFilter: function(e) {
@@ -159,8 +105,7 @@ Page({
       if (!groups[record.date]) {
         groups[record.date] = [];
       }
-      // 添加categoryIcon属性
-      record.categoryIcon = this.getCategoryIcon(record.category);
+      record.categoryIcon = getCategoryIcon(record.category);
       groups[record.date].push(record);
     });
 
@@ -246,17 +191,6 @@ Page({
   },
 
   stopPropagation: function() {},
-  
-  getCategoryIcon: function(category) {
-    const icons = {
-      '餐饮': '🍴',   '交通': '🚌',  '购物': '🛍',
-      '娱乐': '🎤',   '医疗': '💊',  '教育': '📖',
-      '居住': '🏠',   '通讯': '📞',  '日用': '🧻',
-      '彩票': '🎫',   '水电': '⚡',  '亲友': '👨‍👩‍👧',
-      '汽车': '🚗',   '其他': '📦'
-    };
-    return icons[category] || '📦';
-  },
   
   viewRecord: function(e) {
     const id = e.currentTarget.dataset.id;

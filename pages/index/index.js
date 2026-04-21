@@ -1,4 +1,5 @@
 const { getCategoryIcon } = require('../../utils/categories');
+const { getRecordsByMonth } = require('../../utils/api');
 
 Page({
   data: {
@@ -57,19 +58,67 @@ Page({
   },
 
   loadData() {
-    console.log('开始加载数据');
-    console.log('模拟数据:', this.data.mockSummary);
-    // 暂时使用模拟数据，避免网络请求错误
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth() + 1;
+
+    getRecordsByMonth(year, month)
+      .then(records => {
+        this.processRecords(records);
+      })
+      .catch(err => {
+        console.error('获取数据失败:', err);
+        this.setMockData();
+      });
+  },
+
+  processRecords(records) {
+    const expenseRecords = records.filter(r => r.type === 'expense');
+    const totalExpense = expenseRecords.reduce((sum, r) => sum + parseFloat(r.amount), 0);
+    const avgExpense = expenseRecords.length > 0 ? totalExpense / expenseRecords.length : 0;
+
+    const categoryMap = {};
+    expenseRecords.forEach(r => {
+      const cat = r.category;
+      const amt = parseFloat(r.amount);
+      categoryMap[cat] = (categoryMap[cat] || 0) + amt;
+    });
+
+    const sortedCategories = Object.entries(categoryMap)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 6);
+
+    const maxCatAmount = sortedCategories.length > 0 ? sortedCategories[0][1] : 1;
+
+    const rankList = sortedCategories.map(([name, amount]) => ({
+      name,
+      icon: getCategoryIcon(name),
+      pct: totalExpense > 0 ? ((amount / totalExpense) * 100).toFixed(1) + '%' : '0%',
+      amount: amount.toFixed(1),
+      barWidth: Math.round((amount / maxCatAmount) * 100)
+    }));
+
+    const trendList = this.buildTrendList(expenseRecords);
+
+    const recentList = records
+      .sort((a, b) => new Date(b.date) - new Date(a.date))
+      .slice(0, 4)
+      .map(r => ({
+        title: r.description || r.category,
+        category: r.category,
+        time: `${r.date} ${r.createTime ? r.createTime.substring(11, 16) : ''}`,
+        amount: r.type === 'expense' ? `-${parseFloat(r.amount).toFixed(2)}` : `+${parseFloat(r.amount).toFixed(2)}`,
+        icon: getCategoryIcon(r.category)
+      }));
+
     this.setData({
-      hasRealData: false,
-      totalExpense: this.data.mockSummary.totalExpense,
-      avgExpense: this.data.mockSummary.avgExpense,
-      rightTotal: this.data.mockSummary.rightTotal,
-      trendList: this.data.mockTrendList,
-      rankList: this.data.mockRankList,
-      recentList: this.data.mockRecentList
-    }, () => {
-      console.log('数据设置完成');
+      hasRealData: true,
+      totalExpense: totalExpense.toFixed(2),
+      avgExpense: avgExpense.toFixed(2),
+      rightTotal: totalExpense.toFixed(2),
+      trendList,
+      rankList,
+      recentList
     });
   },
   

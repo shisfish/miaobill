@@ -1,3 +1,3 @@
-<view class="fab" bindtap="handleTap" style="width: {{size}}rpx; height: {{size}}rpx; background-color: {{color}};">
+<view wx:if="{{!hidden}}" class="fab" bindtap="handleTap" style="width: {{size}}rpx; height: {{size}}rpx; background-color: {{color}};">
   <text class="fab-icon">+</text>
 </view>
