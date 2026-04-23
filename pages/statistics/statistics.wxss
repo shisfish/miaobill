@@ -146,6 +146,7 @@ page {
   background-color: #FFFFFF;
   border-radius: 28rpx 28rpx 0 0;
   overflow: hidden;
+  width: 100%;
 }
 
 .picker-head {

@@ -1,5 +1,6 @@
 const { getRecordsByMonth } = require('../../utils/api');
 const { getCategoryIcon } = require('../../utils/categories');
+const { isUserLoggedIn, performLoginWithAvatar } = require('../../utils/auth');
 
 Page({
   data: {
@@ -9,21 +10,18 @@ Page({
     monthExpense: '0.00',
     currentYear: 2026,
     currentMonth: 4,
+    monthValue: '2026-04',
     showMonthPicker: false,
-    years: (function() {
-      const now = new Date();
-      const startYear = 2018;
-      const endYear = now.getFullYear() + 1;
-      const arr = [];
-      for (let y = startYear; y <= endYear; y++) arr.push(y);
-      return arr;
-    })(),
-    months: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-    pickerValue: [11, 3],
-    tempPickerValue: [11, 3]
+    showLoginConfirm: false
   },
 
   onLoad: function () {
+    const now = new Date();
+    this.setData({
+      currentYear: now.getFullYear(),
+      currentMonth: now.getMonth() + 1,
+      monthValue: `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
+    });
     this.loadRecords();
   },
 
@@ -32,6 +30,15 @@ Page({
   },
   
   loadRecords: function() {
+    if (!isUserLoggedIn()) {
+      this.setData({
+        filteredRecords: [],
+        groupedRecords: [],
+        monthExpense: '0.00'
+      });
+      return;
+    }
+
     const { currentYear, currentMonth } = this.data;
 
     getRecordsByMonth(currentYear, currentMonth)
@@ -155,42 +162,28 @@ Page({
   onMonthChange: function() {},
 
   showMonthPicker: function() {
-    const { years, months, currentYear, currentMonth } = this.data;
-    const yearIndex = years.indexOf(currentYear);
-    const monthIndex = months.indexOf(currentMonth);
     this.setData({
-      showMonthPicker: true,
-      pickerValue: [yearIndex >= 0 ? yearIndex : 0, monthIndex],
-      tempPickerValue: [yearIndex >= 0 ? yearIndex : 0, monthIndex]
+      showMonthPicker: true
     });
   },
 
-  hideMonthPicker: function() {
+  onMonthConfirm: function(e) {
+    const { year, month } = e.detail;
     this.setData({
-      showMonthPicker: false
-    });
-  },
-
-  onPickerChange: function(e) {
-    this.setData({
-      tempPickerValue: e.detail.value
-    });
-  },
-
-  confirmMonth: function() {
-    const { years, months, tempPickerValue } = this.data;
-    const selectedYear = years[tempPickerValue[0]];
-    const selectedMonth = months[tempPickerValue[1]];
-    this.setData({
-      currentYear: selectedYear,
-      currentMonth: selectedMonth,
+      currentYear: year,
+      currentMonth: month,
+      monthValue: `${year}-${String(month).padStart(2, '0')}`,
       showMonthPicker: false
     }, () => {
       this.loadRecords();
     });
   },
 
-  stopPropagation: function() {},
+  onMonthCancel: function() {
+    this.setData({
+      showMonthPicker: false
+    });
+  },
   
   viewRecord: function(e) {
     const id = e.currentTarget.dataset.id;
@@ -201,9 +194,37 @@ Page({
   },
 
   addRecord: function() {
-    wx.switchTab({
-      url: '/pages/addRecord/addRecord'
-    });
+    if (!isUserLoggedIn()) {
+      this.setData({ showLoginConfirm: true });
+    } else {
+      wx.switchTab({
+        url: '/pages/addRecord/addRecord'
+      });
+    }
+  },
+
+  onChooseAvatar: function(e) {
+    const avatarUrl = e.detail && e.detail.avatarUrl;
+    if (!avatarUrl) {
+      console.log('未选择头像或取消选择');
+      return;
+    }
+
+    performLoginWithAvatar(avatarUrl)
+      .then(userInfo => {
+        this.setData({ showLoginConfirm: false });
+        this.loadRecords();
+        wx.switchTab({ url: '/pages/addRecord/addRecord' });
+      })
+      .catch(err => {
+        if (err.message !== '用户取消登录') {
+          console.error('登录失败:', err);
+        }
+      });
+  },
+
+  onLoginCancel: function() {
+    this.setData({ showLoginConfirm: false });
   },
 
   onUnload: function() {

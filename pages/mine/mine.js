@@ -1,4 +1,5 @@
-const { wxLogin, getUserById } = require('../../utils/api');
+const { wxLogin, getUserById, doCheckin, getCheckinStats } = require('../../utils/api');
+const { checkAuthAndExecute, isUserLoggedIn, performLoginWithAvatar } = require('../../utils/auth');
 
 Page({
   data: {
@@ -59,72 +60,77 @@ Page({
     const avatarUrl = e.detail.avatarUrl;
     if (!avatarUrl) return;
 
-    wx.showLoading({ title: '登录中...' });
-    wx.login({
-      success: (res) => {
-        if (res.code) {
-          this.sendLoginToServer(res.code, '', avatarUrl, 0);
-        } else {
-          wx.hideLoading();
-          wx.showToast({ title: '登录失败', icon: 'none' });
-        }
-      },
-      fail: () => {
-        wx.hideLoading();
-        wx.showToast({ title: '登录失败', icon: 'none' });
-      }
-    });
-  },
-
-  sendLoginToServer(code, nickName, avatarUrl, gender) {
-    wxLogin({ code, nickName, avatarUrl, gender })
-      .then(res => {
-        wx.hideLoading();
-        const userInfo = {
-          id: res.id,
-          nickName: res.nickName,
-          avatarUrl: res.avatarUrl
-        };
-        wx.setStorageSync('userInfo', userInfo);
+    performLoginWithAvatar(avatarUrl)
+      .then(userInfo => {
         this.setData({
-          nickName: res.nickName,
-          avatarUrl: res.avatarUrl,
-          userId: res.id,
+          nickName: userInfo.nickName,
+          avatarUrl: userInfo.avatarUrl,
+          userId: userInfo.id,
           isLogin: true
         });
-        wx.showToast({ title: '登录成功', icon: 'success' });
+        this.loadStats();
       })
       .catch(err => {
-        wx.hideLoading();
-        console.error('登录失败:', err);
-        wx.showToast({ title: '登录失败，请重试', icon: 'none' });
+        if (err.message !== '用户取消登录') {
+          console.error('登录失败:', err);
+        }
       });
   },
 
   loadStats() {
-    const records = wx.getStorageSync('records') || [];
-    const dates = new Set(records.map(r => r.date));
-    this.setData({
-      totalRecords: records.length,
-      totalDays: dates.size,
-      checkinDays: wx.getStorageSync('checkinDays') || 0
-    });
+    const userInfo = wx.getStorageSync('userInfo');
+    if (userInfo && userInfo.id) {
+      getCheckinStats()
+        .then(res => {
+          this.setData({
+            checkinDays: res.continuousDays || 0,
+            totalDays: res.totalDays || 0,
+            totalRecords: res.totalRecords || 0
+          });
+        })
+        .catch(err => {
+          console.error('获取打卡统计失败:', err);
+        });
+    }
   },
 
   checkin() {
     if (this.data.checking) return;
+
     const today = new Date().toISOString().slice(0, 10);
     const lastCheckin = wx.getStorageSync('lastCheckinDate');
     if (lastCheckin === today) {
       wx.showToast({ title: '今日已打卡', icon: 'none' });
       return;
     }
-    this.setData({ checking: true });
-    let d = this.data.checkinDays + 1;
-    wx.setStorageSync('checkinDays', d);
-    wx.setStorageSync('lastCheckinDate', today);
-    this.setData({ checkinDays: d, checking: false });
-    wx.showToast({ title: '打卡成功', icon: 'success' });
+
+    checkAuthAndExecute(() => {
+      this.setData({ checking: true });
+      wx.showLoading({ title: '打卡中...' });
+      return doCheckin();
+    }, {
+      title: '需要登录',
+      content: '请先登录以打卡'
+    })
+    .then(res => {
+      wx.hideLoading();
+      wx.setStorageSync('lastCheckinDate', today);
+      this.setData({
+        checkinDays: res.continuousDays || 0,
+        checking: false
+      });
+      wx.showToast({ title: '打卡成功', icon: 'success' });
+    })
+    .catch(err => {
+      wx.hideLoading();
+      if (err.message !== '用户取消登录') {
+        console.error('打卡失败:', err);
+        this.setData({ checking: false });
+        wx.showToast({ title: '打卡失败，请重试', icon: 'none' });
+      } else {
+        this.setData({ checking: false });
+      }
+    });
   },
 
   upgradeVip() { wx.showToast({ title: '功能开发中', icon: 'none' }); },

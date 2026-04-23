@@ -1,56 +1,64 @@
 const { get, post, put, del } = require('./request');
-
-function getUserId() {
-  const userInfo = wx.getStorageSync('userInfo');
-  return userInfo ? userInfo.id : null;
-}
+const { isUserLoggedIn } = require('./auth');
 
 function getRecordsByMonth(year, month) {
-  return get(`/api/records/month/${year}/${month}`, { userId: getUserId() });
+  if (!isUserLoggedIn()) return Promise.reject(new Error('未登录'));
+  return get(`/api/records/month/${year}/${month}`);
 }
 
 function getRecordsByRange(startDate, endDate) {
-  return get('/api/records/range', { userId: getUserId(), startDate, endDate });
+  if (!isUserLoggedIn()) return Promise.reject(new Error('未登录'));
+  return get('/api/records/range', { startDate, endDate });
 }
 
 function getRecordById(id) {
-  return get(`/api/records/${id}`, { userId: getUserId() });
+  if (!isUserLoggedIn()) return Promise.reject(new Error('未登录'));
+  return get(`/api/records/${id}`);
 }
 
 function createRecord(data) {
-  return post('/api/records', data, { userId: getUserId() });
+  if (!isUserLoggedIn()) return Promise.reject(new Error('未登录'));
+  return post('/api/records', data);
 }
 
 function updateRecord(id, data) {
-  return put(`/api/records/${id}`, data, { userId: getUserId() });
+  if (!isUserLoggedIn()) return Promise.reject(new Error('未登录'));
+  return put(`/api/records/${id}`, data);
 }
 
 function deleteRecord(id) {
-  return del(`/api/records/${id}?userId=${getUserId()}`);
+  if (!isUserLoggedIn()) return Promise.reject(new Error('未登录'));
+  return del(`/api/records/${id}`);
 }
 
 function getMonthStats(year, month) {
-  return get(`/api/records/stats/month/${year}/${month}`, { userId: getUserId() });
+  if (!isUserLoggedIn()) return Promise.reject(new Error('未登录'));
+  return get(`/api/records/stats/month/${year}/${month}`);
 }
 
 function getCategoryStats(year, month) {
-  return get(`/api/records/stats/category/${year}/${month}`, { userId: getUserId() });
+  if (!isUserLoggedIn()) return Promise.reject(new Error('未登录'));
+  return get(`/api/records/stats/category/${year}/${month}`);
 }
 
 function getCategoriesByType(type) {
-  return get(`/api/categories/type/${type}`, { userId: getUserId() });
+  if (!isUserLoggedIn()) return Promise.reject(new Error('未登录'));
+  return get(`/api/categories/type/${type}`);
 }
 
 function addCategory(data) {
-  return post('/api/categories', data, { userId: getUserId() });
+  if (!isUserLoggedIn()) return Promise.reject(new Error('未登录'));
+  return post('/api/categories', data);
 }
 
 function updateCategory(id, data) {
-  return put(`/api/categories/${id}`, data, { userId: getUserId() });
+  if (!isUserLoggedIn()) return Promise.reject(new Error('未登录'));
+  return put(`/api/categories/${id}`, data);
 }
 
 function deleteCategory(id) {
-  return del(`/api/categories/${id}?userId=${getUserId()}`);
+  if (!isUserLoggedIn()) return Promise.reject(new Error('未登录'));
+  return del(`/api/categories/${id}`);
 }
 
 function wxLogin(data) {
@@ -63,6 +71,21 @@ function getUserById(id) {
 
 function updateUser(id, data) {
   return put(`/api/user/${id}`, data);
+}
+
+function doCheckin() {
+  if (!isUserLoggedIn()) return Promise.reject(new Error('未登录'));
+  return post('/api/checkin', {});
+}
+
+function getCheckinStats() {
+  if (!isUserLoggedIn()) return Promise.reject(new Error('未登录'));
+  return get('/api/checkin/stats');
+}
+
+function hasCheckedToday() {
+  if (!isUserLoggedIn()) return Promise.reject(new Error('未登录'));
+  return get('/api/checkin/today');
 }
 
 module.exports = {
@@ -80,5 +103,8 @@ module.exports = {
   deleteCategory,
   wxLogin,
   getUserById,
-  updateUser
+  updateUser,
+  doCheckin,
+  getCheckinStats,
+  hasCheckedToday
 };

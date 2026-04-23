@@ -1,3 +1,6 @@
 {
-  "usingComponents": {}
+  "usingComponents": {
+    "date-picker": "/components/date-picker/date-picker",
+    "login-confirm": "/components/login-confirm/login-confirm"
+  }
 }

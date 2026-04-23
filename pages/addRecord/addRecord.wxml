@@ -55,7 +55,7 @@
           <!-- 右侧日期按钮 -->
           <view class="k date-btn" bindtap="pickDate">
             <text class="date-icon">📅</text>
-            <text>今天</text>
+            <text>{{dateDisplay}}</text>
           </view>
         </view>
         <view class="kb-row">
@@ -81,4 +81,19 @@
       </view>
     </view>
   </view>
+
+  <!-- 日期选择器 -->
+  <date-picker
+    show="{{showDatePicker}}"
+    value="{{date}}"
+    bind:confirm="onDateConfirm"
+    bind:cancel="onDateCancel"
+  />
+
+  <!-- 登录确认弹窗 -->
+  <login-confirm 
+    show="{{showLoginConfirm}}" 
+    bind:chooseavatar="onChooseAvatar" 
+    bind:cancel="onLoginCancel"
+  />
 </view>

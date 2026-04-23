@@ -14,6 +14,9 @@ function request(options) {
 
   const fullUrl = `${baseUrl}${buildUrl(url, params)}`;
 
+  const userInfo = wx.getStorageSync('userInfo');
+  const token = userInfo ? userInfo.token : '';
+
   return new Promise((resolve, reject) => {
     wx.request({
       url: fullUrl,
@@ -21,11 +24,21 @@ function request(options) {
       data,
       header: {
         'Content-Type': 'application/json',
+        'Authorization': token,
         ...header
       },
       success: (res) => {
         if (res.statusCode === 200) {
-          resolve(res.data);
+          if (res.data.code === 200) {
+            resolve(res.data.data);
+          } else {
+            wx.showToast({ title: res.data.message || '请求失败', icon: 'none' });
+            reject(res.data);
+          }
+        } else if (res.statusCode === 401) {
+          wx.removeStorageSync('userInfo');
+          wx.showToast({ title: '请重新登录', icon: 'none' });
+          reject(res);
         } else {
           wx.showToast({ title: '请求失败', icon: 'none' });
           reject(res);

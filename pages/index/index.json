@@ -1,6 +1,8 @@
 {
   "usingComponents": {
+    "week-picker": "/components/week-picker/week-picker",
     "month-picker": "/components/month-picker/month-picker",
+    "year-picker": "/components/year-picker/year-picker",
     "login-confirm": "/components/login-confirm/login-confirm"
   }
 }

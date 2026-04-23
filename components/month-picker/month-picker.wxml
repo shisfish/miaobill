@@ -1,0 +1,19 @@
+<view wx:if="{{show}}" class="mask" bindtap="onMaskTap">
+  <view class="picker-panel" catchtap="stopPropagation">
+    <view class="picker-head">
+      <text class="picker-cancel" bindtap="onCancel">取消</text>
+      <text class="picker-title">选择月份</text>
+      <text class="picker-ok" bindtap="onConfirm">确定</text>
+    </view>
+    <view class="picker-body">
+      <picker-view class="pv" value="{{tempPickerValue}}" bindchange="onPickerChange">
+        <picker-view-column>
+          <view wx:for="{{years}}" wx:key="*this" class="pi">{{item}}</view>
+        </picker-view-column>
+        <picker-view-column>
+          <view wx:for="{{months}}" wx:key="*this" class="pi">{{item < 10 ? '0' + item : item}}</view>
+        </picker-view-column>
+      </picker-view>
+    </view>
+  </view>
+</view>

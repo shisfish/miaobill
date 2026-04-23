@@ -46,23 +46,17 @@
 
   <floating-action-button bind:tap="addRecord" />
 
-  <view wx:if="{{showMonthPicker}}" class="mask" bindtap="hideMonthPicker">
-    <view class="picker-panel" catchtap="stopPropagation">
-      <view class="picker-head">
-        <text class="picker-cancel" bindtap="hideMonthPicker">取消</text>
-        <text class="picker-title">选择月份</text>
-        <text class="picker-ok" bindtap="confirmMonth">确定</text>
-      </view>
-      <view class="picker-body">
-        <picker-view class="pv" value="{{pickerValue}}" bindchange="onPickerChange">
-          <picker-view-column>
-            <view wx:for="{{years}}" wx:key="*this" class="pi">{{item}}</view>
-          </picker-view-column>
-          <picker-view-column>
-            <view wx:for="{{months}}" wx:key="*this" class="pi">{{item < 10 ? '0' + item : item}}</view>
-          </picker-view-column>
-        </picker-view>
-      </view>
-    </view>
-  </view>
+  <month-picker
+    show="{{showMonthPicker}}"
+    value="{{monthValue}}"
+    bind:confirm="onMonthConfirm"
+    bind:cancel="onMonthCancel"
+  />
+
+  <!-- 登录确认弹窗 -->
+  <login-confirm 
+    show="{{showLoginConfirm}}" 
+    bind:chooseavatar="onChooseAvatar" 
+    bind:cancel="onLoginCancel"
+  />
 </view>

@@ -1,0 +1,71 @@
+.mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 99999;
+}
+
+.picker-panel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: white;
+  border-radius: 24rpx 24rpx 0 0;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.picker-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 30rpx 40rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.picker-cancel,
+.picker-ok {
+  font-size: 32rpx;
+  color: #333;
+}
+
+.picker-ok {
+  color: #FFD54F;
+  font-weight: 500;
+}
+
+.picker-title {
+  font-size: 36rpx;
+  font-weight: 500;
+  color: #333;
+}
+
+.picker-body {
+  height: 400rpx;
+}
+
+.pv {
+  width: 100%;
+  height: 100%;
+}
+
+.pi {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 80rpx;
+  font-size: 40rpx;
+  color: #333;
+}

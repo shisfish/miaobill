@@ -1,54 +1,204 @@
 const { getCategoryIcon } = require('../../utils/categories');
-const { getRecordsByMonth } = require('../../utils/api');
+const { getRecordsByMonth, getRecordsByRange } = require('../../utils/api');
+const { isUserLoggedIn, performLoginWithAvatar } = require('../../utils/auth');
 
 Page({
   data: {
     period: 'week',
     weekLabels: ['10周', '11周', '12周', '13周'],
     activeWeekIdx: 0,
-    hasRealData: false,
     totalExpense: '0.00',
-    avgExpense: '0.00',
-    rightTotal: '0.00',
     trendList: [],
     rankList: [],
     recentList: [],
-    mockSummary: {
-      totalExpense: '3680.40',
-      avgExpense: '526.34',
-      rightTotal: '1820.60'
-    },
-    mockTrendList: [
-      { label: '周一', value: 32, heightPercent: 35 },
-      { label: '周二', value: 48, heightPercent: 52 },
-      { label: '周三', value: 39, heightPercent: 42 },
-      { label: '周四', value: 76, heightPercent: 83 },
-      { label: '周五', value: 58, heightPercent: 63 },
-      { label: '周六', value: 92, heightPercent: 100 },
-      { label: '周日', value: 66, heightPercent: 72 }
-    ],
-    mockRankList: [
-      { name: '日用', icon: '🧻', pct: '31.7%', amount: '666.9', barWidth: 100 },
-      { name: '汽车', icon: '🚗', pct: '24.2%', amount: '508.0', barWidth: 76 },
-      { name: '水电', icon: '⚡', pct: '21.3%', amount: '447.9', barWidth: 67 },
-      { name: '亲友', icon: '👨‍👩‍👧', pct: '11.1%', amount: '233.9', barWidth: 35 },
-      { name: '餐饮', icon: '🍴', pct: '7.5%', amount: '158.5', barWidth: 24 },
-      { name: '交通', icon: '🚌', pct: '1.4%', amount: '30.1', barWidth: 4 }
-    ],
-    mockRecentList: [
-      { title: '超市采购', category: '日用', time: '今天 19:20', amount: '-128.00', icon: '🧻' },
-      { title: '加油', category: '汽车', time: '今天 14:05', amount: '-260.00', icon: '🚗' },
-      { title: '午餐', category: '餐饮', time: '今天 12:30', amount: '-36.50', icon: '🍴' },
-      { title: '水费', category: '水电', time: '昨天 09:10', amount: '-58.00', icon: '⚡' }
-    ]
+    selectedDate: '',
+    selectedMonth: '',
+    displayDate: '',
+    periodText: '',
+    showPicker: false,
+    showLoginConfirm: false
+  },
+
+  onLoad() {
+    const now = new Date();
+    const todayStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+    const monthStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+    this.setData({
+      selectedDate: todayStr,
+      selectedMonth: monthStr,
+      displayDate: this.getWeekDisplay(now)
+    });
+    this.updatePeriodText();
   },
 
   onShow() {
     this.loadData();
   },
 
+  getWeekDisplay(date) {
+    const startOfWeek = new Date(date);
+    startOfWeek.setDate(date.getDate() - date.getDay());
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(startOfWeek.getDate() + 6);
+    return `${startOfWeek.getMonth()+1}月${startOfWeek.getDate()}日-${endOfWeek.getMonth()+1}月${endOfWeek.getDate()}日`;
+  },
+
+  updateDisplayDate() {
+    const { period, selectedDate, selectedMonth } = this.data;
+    let displayDate;
+    
+    if (period === 'week') {
+      const dateObj = new Date(selectedDate);
+      displayDate = this.getWeekDisplay(dateObj);
+    } else if (period === 'month') {
+      const dateObj = new Date(selectedDate);
+      displayDate = `${dateObj.getFullYear()}年${dateObj.getMonth()+1}月`;
+    } else {
+      const parts = selectedMonth.split('-');
+      displayDate = `${parts[0]}年`;
+    }
+    
+    this.setData({ displayDate });
+  },
+
+  updatePeriodText() {
+    const period = this.data.period;
+    let periodText;
+    if (period === 'week') {
+      periodText = '本周支出';
+    } else if (period === 'month') {
+      periodText = '本月支出';
+    } else {
+      periodText = '本年支出';
+    }
+    this.setData({ periodText });
+  },
+
+  navigatePrev() {
+    const { period, selectedDate, selectedMonth } = this.data;
+    
+    if (period === 'week') {
+      const date = new Date(selectedDate);
+      date.setDate(date.getDate() - 7);
+      this.setData({
+        selectedDate: `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`
+      }, () => {
+        this.updateDisplayDate();
+        this.loadData();
+      });
+    } else if (period === 'month') {
+      const parts = selectedMonth.split('-');
+      const year = parseInt(parts[0]);
+      const month = parseInt(parts[1]);
+      let newYear = year;
+      let newMonth = month - 1;
+      if (newMonth < 1) {
+        newMonth = 12;
+        newYear--;
+      }
+      this.setData({
+        selectedMonth: `${newYear}-${String(newMonth).padStart(2,'0')}`
+      }, () => {
+        this.updateDisplayDate();
+        this.loadData();
+      });
+    } else {
+      const parts = selectedMonth.split('-');
+      const year = parseInt(parts[0]);
+      this.setData({
+        selectedMonth: `${year - 1}-01`
+      }, () => {
+        this.updateDisplayDate();
+        this.loadData();
+      });
+    }
+  },
+
+  navigateNext() {
+    const { period, selectedDate, selectedMonth } = this.data;
+    
+    if (period === 'week') {
+      const date = new Date(selectedDate);
+      date.setDate(date.getDate() + 7);
+      this.setData({
+        selectedDate: `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`
+      }, () => {
+        this.updateDisplayDate();
+        this.loadData();
+      });
+    } else if (period === 'month') {
+      const parts = selectedMonth.split('-');
+      const year = parseInt(parts[0]);
+      const month = parseInt(parts[1]);
+      let newYear = year;
+      let newMonth = month + 1;
+      if (newMonth > 12) {
+        newMonth = 1;
+        newYear++;
+      }
+      this.setData({
+        selectedMonth: `${newYear}-${String(newMonth).padStart(2,'0')}`
+      }, () => {
+        this.updateDisplayDate();
+        this.loadData();
+      });
+    } else {
+      const parts = selectedMonth.split('-');
+      const year = parseInt(parts[0]);
+      this.setData({
+        selectedMonth: `${year + 1}-01`
+      }, () => {
+        this.updateDisplayDate();
+        this.loadData();
+      });
+    }
+  },
+
+  showPeriodPicker() {
+    this.setData({ showPicker: true });
+  },
+
+  onWeekConfirm(e) {
+    const selectedDate = e.detail.value;
+    this.setData({
+      selectedDate,
+      showPicker: false
+    }, () => {
+      this.updateDisplayDate();
+      this.loadData();
+    });
+  },
+
+  onMonthConfirm(e) {
+    const { value: selectedMonth } = e.detail;
+    this.setData({
+      selectedMonth,
+      showPicker: false
+    }, () => {
+      this.updateDisplayDate();
+      this.loadData();
+    });
+  },
+
+  onYearConfirm(e) {
+    const { value: selectedMonth } = e.detail;
+    this.setData({
+      selectedMonth,
+      showPicker: false
+    }, () => {
+      this.updateDisplayDate();
+      this.loadData();
+    });
+  },
+
+  onPickerCancel() {
+    this.setData({ showPicker: false });
+  },
+
   switchPeriod(e) {
     this.setData({ period: e.currentTarget.dataset.p });
+    this.updatePeriodText();
+    this.updateDisplayDate();
     this.loadData();
   },
 
@@ -58,24 +208,49 @@ Page({
   },
 
   loadData() {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = now.getMonth() + 1;
+    if (!isUserLoggedIn()) {
+      this.resetData();
+      return;
+    }
 
-    getRecordsByMonth(year, month)
+    const { period, selectedDate, selectedMonth } = this.data;
+    let startDate, endDate;
+
+    if (period === 'week') {
+      const date = new Date(selectedDate);
+      const startOfWeek = new Date(date);
+      startOfWeek.setDate(date.getDate() - date.getDay());
+      const endOfWeek = new Date(startOfWeek);
+      endOfWeek.setDate(startOfWeek.getDate() + 6);
+      startDate = `${startOfWeek.getFullYear()}-${String(startOfWeek.getMonth() + 1).padStart(2, '0')}-${String(startOfWeek.getDate()).padStart(2, '0')}`;
+      endDate = `${endOfWeek.getFullYear()}-${String(endOfWeek.getMonth() + 1).padStart(2, '0')}-${String(endOfWeek.getDate()).padStart(2, '0')}`;
+    } else if (period === 'month') {
+      const parts = selectedMonth.split('-');
+      const year = parseInt(parts[0]);
+      const month = parseInt(parts[1]);
+      const daysInMonth = new Date(year, month, 0).getDate();
+      startDate = `${year}-${String(month).padStart(2, '0')}-01`;
+      endDate = `${year}-${String(month).padStart(2, '0')}-${String(daysInMonth).padStart(2, '0')}`;
+    } else {
+      const parts = selectedMonth.split('-');
+      const year = parseInt(parts[0]);
+      startDate = `${year}-01-01`;
+      endDate = `${year}-12-31`;
+    }
+
+    getRecordsByRange(startDate, endDate)
       .then(records => {
         this.processRecords(records);
       })
       .catch(err => {
         console.error('获取数据失败:', err);
-        this.setMockData();
+        this.resetData();
       });
   },
 
   processRecords(records) {
     const expenseRecords = records.filter(r => r.type === 'expense');
     const totalExpense = expenseRecords.reduce((sum, r) => sum + parseFloat(r.amount), 0);
-    const avgExpense = expenseRecords.length > 0 ? totalExpense / expenseRecords.length : 0;
 
     const categoryMap = {};
     expenseRecords.forEach(r => {
@@ -98,7 +273,7 @@ Page({
       barWidth: Math.round((amount / maxCatAmount) * 100)
     }));
 
-    const trendList = this.buildTrendList(expenseRecords);
+    const trendList = this.buildTrendList(expenseRecords, this.data.period);
 
     const recentList = records
       .sort((a, b) => new Date(b.date) - new Date(a.date))
@@ -112,42 +287,93 @@ Page({
       }));
 
     this.setData({
-      hasRealData: true,
       totalExpense: totalExpense.toFixed(2),
-      avgExpense: avgExpense.toFixed(2),
-      rightTotal: totalExpense.toFixed(2),
       trendList,
+      trendChartWidth: trendList.length * 80,
       rankList,
       recentList
     });
   },
   
-  setMockData() {
+  resetData() {
     this.setData({
-      hasRealData: false,
-      totalExpense: this.data.mockSummary.totalExpense,
-      avgExpense: this.data.mockSummary.avgExpense,
-      rightTotal: this.data.mockSummary.rightTotal,
-      trendList: this.data.mockTrendList,
-      rankList: this.data.mockRankList,
-      recentList: this.data.mockRecentList
+      totalExpense: '0.00',
+      trendList: [],
+      rankList: [],
+      recentList: []
     });
   },
 
-  buildTrendList(records) {
-    const list = [
-      { label: '周一', value: 0 },
-      { label: '周二', value: 0 },
-      { label: '周三', value: 0 },
-      { label: '周四', value: 0 },
-      { label: '周五', value: 0 },
-      { label: '周六', value: 0 },
-      { label: '周日', value: 0 }
-    ];
+  buildTrendList(records, period) {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth() + 1;
+    const list = [];
 
-    records.slice(0, 7).forEach((record, index) => {
-      list[index].value = Number(record.amount) || 0;
-    });
+    if (period === 'week') {
+      for (let i = 6; i >= 0; i--) {
+        const d = new Date(now);
+        d.setDate(d.getDate() - i);
+        const m = d.getMonth() + 1;
+        const day = d.getDate();
+        list.push({
+          label: `${m}/${day}`,
+          value: 0,
+          dateStr: `${d.getFullYear()}-${String(m).padStart(2, '0')}-${String(day).padStart(2, '0')}`
+        });
+      }
+
+      records.forEach(record => {
+        for (let i = 0; i < list.length; i++) {
+          if (list[i].dateStr === record.date) {
+            list[i].value += Number(record.amount) || 0;
+            break;
+          }
+        }
+      });
+    } else if (period === 'month') {
+      const daysInMonth = new Date(year, month, 0).getDate();
+      const today = now.getDate();
+      const endDay = (now.getFullYear() === year && now.getMonth() + 1 === month) ? today : daysInMonth;
+      for (let d = 1; d <= endDay; d++) {
+        list.push({
+          label: `${d}日`,
+          value: 0,
+          dateStr: `${year}-${String(month).padStart(2, '0')}-${String(d).padStart(2, '0')}`
+        });
+      }
+
+      records.forEach(record => {
+        for (let i = 0; i < list.length; i++) {
+          if (list[i].dateStr === record.date) {
+            list[i].value += Number(record.amount) || 0;
+            break;
+          }
+        }
+      });
+    } else if (period === 'year') {
+      for (let m = 1; m <= month; m++) {
+        list.push({
+          label: `${m}月`,
+          value: 0,
+          month: m
+        });
+      }
+
+      records.forEach(record => {
+        const recordDate = new Date(record.date);
+        const recordMonth = recordDate.getMonth() + 1;
+        const recordYear = recordDate.getFullYear();
+        if (recordYear === year) {
+          for (let i = 0; i < list.length; i++) {
+            if (list[i].month === recordMonth) {
+              list[i].value += Number(record.amount) || 0;
+              break;
+            }
+          }
+        }
+      });
+    }
 
     const max = Math.max(...list.map(item => item.value), 1);
 
@@ -163,7 +389,35 @@ Page({
   },
 
   addRecord() {
-    wx.switchTab({ url: '/pages/addRecord/addRecord' });
+    if (!isUserLoggedIn()) {
+      this.setData({ showLoginConfirm: true });
+    } else {
+      wx.switchTab({ url: '/pages/addRecord/addRecord' });
+    }
+  },
+
+  onChooseAvatar(e) {
+    const avatarUrl = e.detail && e.detail.avatarUrl;
+    if (!avatarUrl) {
+      console.log('未选择头像或取消选择');
+      return;
+    }
+
+    performLoginWithAvatar(avatarUrl)
+      .then(userInfo => {
+        this.setData({ showLoginConfirm: false });
+        this.loadData();
+        wx.switchTab({ url: '/pages/addRecord/addRecord' });
+      })
+      .catch(err => {
+        if (err.message !== '用户取消登录') {
+          console.error('登录失败:', err);
+        }
+      });
+  },
+
+  onLoginCancel() {
+    this.setData({ showLoginConfirm: false });
   },
 
   onUnload() {

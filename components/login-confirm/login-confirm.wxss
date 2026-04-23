@@ -1,0 +1,65 @@
+.login-confirm-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 99999;
+}
+
+.login-confirm-container {
+  width: 560rpx;
+  background: white;
+  border-radius: 24rpx;
+  overflow: hidden;
+}
+
+.login-confirm-title {
+  font-size: 36rpx;
+  font-weight: bold;
+  text-align: center;
+  padding: 50rpx 40rpx 20rpx;
+  color: #333;
+}
+
+.login-confirm-content {
+  font-size: 28rpx;
+  text-align: center;
+  padding: 0 40rpx 50rpx;
+  color: #666;
+}
+
+.login-confirm-buttons {
+  display: flex;
+  border-top: 1rpx solid #e5e5e5;
+}
+
+.login-confirm-btn {
+  flex: 1;
+  height: 96rpx;
+  line-height: 96rpx;
+  text-align: center;
+  font-size: 32rpx;
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+.login-confirm-btn::after {
+  border: none;
+}
+
+.login-confirm-btn.cancel {
+  color: #333;
+  border-right: 1rpx solid #e5e5e5;
+}
+
+.login-confirm-btn.confirm {
+  color: #576b95;
+  font-weight: 500;
+}

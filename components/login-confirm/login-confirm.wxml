@@ -1,0 +1,15 @@
+<view class="login-confirm-mask" wx:if="{{show}}" bindtap="onCancel">
+  <view class="login-confirm-container" catchtap="stopPropagation">
+    <view class="login-confirm-title">{{title}}</view>
+    <view class="login-confirm-content">{{content}}</view>
+    <view class="login-confirm-buttons">
+      <button class="login-confirm-btn cancel" bindtap="onCancel">取消</button>
+      <button 
+        class="login-confirm-btn confirm" 
+        open-type="chooseAvatar" 
+        bindchooseavatar="onChooseAvatar"
+        binderror="onAvatarError"
+      >去登录</button>
+    </view>
+  </view>
+</view>

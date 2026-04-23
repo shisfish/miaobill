@@ -1,4 +1,5 @@
 const { createRecord, getCategoriesByType, addCategory, deleteCategory } = require('../../utils/api');
+const { isUserLoggedIn, performLoginWithAvatar } = require('../../utils/auth');
 
 const DEFAULT_EXPENSE = [
   { name: '餐饮', icon: '🍴' },
@@ -50,16 +51,58 @@ Page({
     selectedCategory: '',
     remark: '',
     date: '',
+    dateDisplay: '今天',
     categories: [],
-    keyboardVisible: false
+    keyboardVisible: false,
+    showDatePicker: false,
+    showLoginConfirm: false
   },
 
   onLoad() {
     const now = new Date();
+    const todayStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
     this.setData({
-      date: `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`
+      date: todayStr,
+      dateDisplay: '今天'
     });
     this.loadCategories();
+  },
+
+  onShow() {
+    if (!isUserLoggedIn()) {
+      this.setData({ showLoginConfirm: true });
+      return;
+    }
+    if (!this.data.keyboardVisible) {
+      this.setData({ keyboardVisible: true });
+    }
+  },
+
+  onChooseAvatar(e) {
+    const avatarUrl = e.detail && e.detail.avatarUrl;
+    if (!avatarUrl) {
+      console.log('未选择头像或取消选择');
+      return;
+    }
+
+    performLoginWithAvatar(avatarUrl)
+      .then(() => {
+        this.setData({ showLoginConfirm: false });
+        this.loadCategories();
+        if (!this.data.keyboardVisible) {
+          this.setData({ keyboardVisible: true });
+        }
+      })
+      .catch(err => {
+        if (err.message !== '用户取消登录') {
+          console.error('登录失败:', err);
+        }
+      });
+  },
+
+  onLoginCancel() {
+    this.setData({ showLoginConfirm: false });
+    wx.switchTab({ url: '/pages/index/index' });
   },
 
   loadCategories() {
@@ -109,6 +152,10 @@ Page({
   },
 
   selectCategory(e) {
+    if (!isUserLoggedIn()) {
+      this.setData({ showLoginConfirm: true });
+      return;
+    }
     this.setData({ selectedCategory: e.currentTarget.dataset.category });
     if (!this.data.keyboardVisible) {
       this.setData({ keyboardVisible: true });
@@ -121,7 +168,6 @@ Page({
 
   stopPropagation() {},
 
-  // 新键盘输入
   pressKey(e) {
     if (!this.data.keyboardVisible) {
       this.setData({ keyboardVisible: true });
@@ -149,11 +195,31 @@ Page({
   },
 
   pickDate() {
-    wx.showModal({
-      title: '选择日期',
-      content: `当前日期：${this.data.date}`,
-      showCancel: false
+    this.setData({ showDatePicker: true });
+  },
+
+  onDateConfirm(e) {
+    const selectedDate = e.detail.value;
+    const now = new Date();
+    const todayStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+    
+    let dateDisplay;
+    if (selectedDate === todayStr) {
+      dateDisplay = '今天';
+    } else {
+      const selectedDateObj = new Date(selectedDate);
+      dateDisplay = `${selectedDateObj.getMonth() + 1}月${selectedDateObj.getDate()}日`;
+    }
+    
+    this.setData({
+      date: selectedDate,
+      dateDisplay: dateDisplay,
+      showDatePicker: false
     });
+  },
+
+  onDateCancel() {
+    this.setData({ showDatePicker: false });
   },
 
   goBack() {
@@ -161,6 +227,11 @@ Page({
   },
 
   saveRecord() {
+    if (!isUserLoggedIn()) {
+      this.setData({ showLoginConfirm: true });
+      return;
+    }
+
     let amtStr = this.data.amount;
     if (!amtStr) {
       wx.showToast({ title: '请输入金额', icon: 'none' }); return;
@@ -221,6 +292,5 @@ Page({
   },
 
   onUnload() {
-    // 清理资源
   }
 });

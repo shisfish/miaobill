@@ -11,6 +11,57 @@ page {
   flex-direction: column;
 }
 
+.top-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+  margin-bottom: 20rpx;
+}
+
+.date-selector {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20rpx 16rpx;
+  background: #ffffff;
+  border-radius: 20rpx;
+  box-shadow: 0 14rpx 40rpx rgba(34, 40, 49, 0.08);
+}
+
+.nav-btn {
+  width: 60rpx;
+  height: 60rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #f4f6f9;
+}
+
+.nav-arrow {
+  font-size: 24rpx;
+  color: #8b93a5;
+}
+
+.date-display {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
+}
+
+.date-text {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #1f1f1f;
+}
+
+.date-arrow {
+  font-size: 20rpx;
+  color: #8b93a5;
+}
+
 .hero-card,
 .section-card {
   background: #ffffff;
@@ -190,6 +241,25 @@ page {
   color: #fff;
 }
 
+.trend-scroll {
+  width: 100%;
+}
+
+.trend-chart-scrollable {
+  display: flex;
+  align-items: flex-end;
+  height: 260rpx;
+  padding: 0 12rpx;
+}
+
+.trend-col-scroll {
+  flex-shrink: 0;
+  width: 80rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .trend-chart {
   display: flex;
   align-items: flex-end;
@@ -213,12 +283,12 @@ page {
   align-items: flex-end;
   justify-content: center;
   background: linear-gradient(180deg, rgba(255, 207, 74, 0.12), rgba(255, 207, 74, 0));
-  border-radius: 20rpx 20rpx 12rpx 12rpx;
+  border-radius: 12rpx;
 }
 
 .trend-bar {
-  width: 28rpx;
-  border-radius: 999rpx;
+  width: 36rpx;
+  border-radius: 8rpx 8rpx 0 0;
   background: linear-gradient(180deg, #ffb703 0%, #f77f00 100%);
   min-height: 8rpx;
   transition: height 0.3s ease;
